@@ -1,0 +1,52 @@
+.countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+
+.countdown__unit {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.countdown__value {
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.countdown__label {
+  font-size: 0.68rem;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+}
+
+.countdown--sm .countdown__value { font-size: 0.92rem; }
+.countdown--lg {
+  padding: 14px 20px;
+  gap: 14px;
+  border-radius: var(--radius-md);
+}
+.countdown--lg .countdown__value { font-size: 2rem; }
+.countdown--lg .countdown__label { font-size: 0.78rem; }
+
+.countdown--urgent {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+.countdown--urgent .countdown__value { color: #ff8080; }
+
+.countdown--ended {
+  background: rgba(169, 188, 172, 0.08);
+  padding: 8px 14px;
+}
+.countdown__ended-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

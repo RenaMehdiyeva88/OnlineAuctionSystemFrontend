@@ -1,0 +1,96 @@
+.switcher-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-left: var(--space-md);
+  border-left: 1px solid var(--color-border);
+}
+
+.switcher-item {
+  position: relative;
+}
+
+.switcher-select {
+  appearance: none;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 7px 32px 7px 12px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-smooth);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a89968' stroke-width='3'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+  padding-right: 30px;
+  min-width: 100px;
+}
+
+.switcher-select option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.switcher-select option:checked {
+  background: linear-gradient(var(--color-accent), var(--color-accent));
+  background-color: var(--color-accent) !important;
+  color: var(--color-accent-ink) !important;
+}
+
+.switcher-select:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 2px rgba(168, 153, 104, 0.1);
+}
+
+.switcher-select:focus {
+  outline: none;
+  border-color: var(--color-accent-bright);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 3px rgba(168, 153, 104, 0.2);
+}
+
+.switcher-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.theme-indicator {
+  font-size: 1.3rem;
+  cursor: help;
+  user-select: none;
+  transition: transform var(--duration-base) var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.theme-indicator:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 640px) {
+  .switcher-group {
+    gap: var(--space-sm);
+    padding-left: var(--space-sm);
+  }
+
+  .switcher-select {
+    padding: 6px 28px 6px 10px;
+    font-size: 0.8rem;
+    min-width: 90px;
+  }
+
+  .theme-indicator {
+    font-size: 1.1rem;
+    width: 32px;
+    height: 32px;
+  }
+}

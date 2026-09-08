@@ -1,0 +1,88 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 12px;
+  line-height: 1.4;
+  border: 1px solid transparent;
+  transition: all var(--duration-base) var(--ease-smooth);
+}
+
+/* ---- Status Badges ---- */
+
+.badge--active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: rgba(76, 154, 107, 0.3);
+}
+
+.badge--active::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: badge-pulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.badge--closed {
+  background: rgba(169, 188, 172, 0.12);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.badge--closed::before {
+  content: "✓";
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.badge--cancelled {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: rgba(214, 69, 69, 0.3);
+}
+
+.badge--cancelled::before {
+  content: "✕";
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ---- Role Badges ---- */
+
+.badge--role-seller {
+  background: rgba(168, 153, 104, 0.15);
+  color: var(--color-accent-bright);
+  border-color: rgba(168, 153, 104, 0.3);
+}
+
+.badge--role-buyer {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border-color: rgba(74, 144, 196, 0.3);
+}
+
+/* ---- Animations ---- */
+
+@keyframes badge-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}

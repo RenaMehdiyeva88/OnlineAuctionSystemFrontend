@@ -1,0 +1,23 @@
+.profile-page { max-width: 560px; }
+.profile-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin: 24px 0 28px;
+}
+.profile-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.92rem;
+}
+.profile-card__row:last-child { border-bottom: none; }
+.profile-card__row > span { color: var(--color-text-faint); }
+.profile-card__id { font-size: 0.78rem; color: var(--color-text-muted); }
+
+.profile-page__actions {
+  display: flex;
+  gap: 12px;
+}

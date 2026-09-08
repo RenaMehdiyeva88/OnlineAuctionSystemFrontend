@@ -1,0 +1,18 @@
+.create-auction {
+  max-width: 640px;
+}
+.create-auction > p { margin-bottom: 28px; }
+.create-auction__form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+.create-auction__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .create-auction__row { grid-template-columns: 1fr; }
+}

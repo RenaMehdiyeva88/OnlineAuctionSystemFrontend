@@ -1,0 +1,154 @@
+[
+  {
+    "id": 1,
+    "title": "Retro Nintendo Entertainment System (NES)",
+    "category": "electronics",
+    "price": 300.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='15' y='25' width='70' height='40' fill='%23cccccc' rx='3'/><rect x='20' y='35' width='35' height='20' fill='%23333333'/><circle cx='65' cy='45' r='4' fill='red'/><circle cx='75' cy='45' r='4' fill='red'/><path d='M25 45h10M30 40v10' stroke='black' stroke-width='2'/><text x='50' y='85' fill='%23c0a975' font-size='8' font-family='sans-serif' text-anchor='middle'>RETRO NES</text></svg>"
+  },
+  {
+    "id": 2,
+    "title": "Vintage Baseball Glove - Rawlings Professional",
+    "category": "sports",
+    "price": 180.00,
+    "description": "",
+    "image_url": "/images/lots/baseball-gloves/1.jpg"
+  },
+  {
+    "id": 3,
+    "title": "Vintage Canon AE-1 35mm Film Camera",
+    "category": "electronics",
+    "price": 150.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='20' y='35' width='60' height='35' fill='%23777777' rx='2'/><rect x='35' y='25' width='30' height='10' fill='%23444444'/><circle cx='50' cy='52' r='15' fill='%23333333' stroke='black' stroke-width='3'/><circle cx='50' cy='52' r='7' fill='%23111111'/><text x='50' y='85' fill='%23c0a975' font-size='8' font-family='sans-serif' text-anchor='middle'>CANON CAMERA</text></svg>",
+    "images": [
+      "https://images.unsplash.com/photo-1486574655068-162e94137442?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1568840568548-478236d70df4?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1483009825281-660b2a20024b?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1774112071748-01e0922e7f3c?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1775967843455-4c97a785fdbf?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1768251005477-8b52aa482e89?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1768251005534-54eeeb014b52?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1543731475-edaae9fbf8ff?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1516961642265-531546e84af2?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1746201092590-ec4c5dab27d6?auto=format&fit=crop&q=80&w=1200"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Omega Speedmaster Professional Chronograph",
+    "category": "collectibles",
+    "price": 3900.00,
+    "description": "",
+    "image_url": "/images/lots/omega-watch/1.jpg",
+    "images": [
+      "https://images.unsplash.com/photo-1516461240763-822a87484851?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1542816340-4d3de5047cfd?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1548171838-1fd4cb4ab854?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1508962061361-bcb4d4c477f8?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1579887775114-e4e82e60b0d7?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1579586337278-3f436f25d4d6?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1539874754764-5a96559165b0?auto=format&fit=crop&q=80&w=1200"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Designer Sunglasses - Ray-Ban Vintage",
+    "category": "fashion",
+    "price": 120.00,
+    "description": "",
+    "image_url": "/images/lots/nike-shoes/1.jpg" 
+  },
+  {
+    "id": 6,
+    "title": "Nike Running Shoes - Rare Vintage Edition",
+    "category": "sports",
+    "price": 250.00,
+    "description": "",
+    "image_url": "/images/lots/nike-shoes/2.jpg"
+  },
+  {
+    "id": 7,
+    "title": "Rare Ancient Coin Collection - Roman Empire",
+    "category": "collectibles",
+    "price": 800.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><circle cx='50' cy='45' r='23' fill='%23c0a975' stroke='%239e8652' stroke-width='2'/><path d='M44 35c2-2 6-2 8 0M44 48c4 2 6-2 10 0M48 35v15' stroke='%23544626' stroke-width='2' stroke-linecap='round'/><text x='50' y='85' fill='%23c0a975' font-size='8' font-family='sans-serif' text-anchor='middle'>ANCIENT COIN</text></svg>"
+  },
+  {
+    "id": 8,
+    "title": "Van Gogh Starry Night - Museum Print",
+    "category": "art",
+    "price": 180.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='20' y='18' width='60' height='45' fill='%231d2b45' stroke='%23c0a975' stroke-width='2'/><circle cx='65' cy='28' r='5' fill='%23fce088'/><path d='M25 45c5-5 10 5 15 0s10-5 15 0' stroke='%23fcd058' stroke-width='1.5' fill='none'/><text x='50' y='85' fill='%23c0a975' font-size='8' font-family='sans-serif' text-anchor='middle'>VAN GOGH ART</text></svg>"
+  },
+  {
+    "id": 9,
+    "title": "Hermes Silk Scarf - Vintage Collection",
+    "category": "fashion",
+    "price": 380.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='20' y='20' width='60' height='60' fill='%23d97706' rx='2'/><rect x='25' y='25' width='50' height='50' fill='%23fef3c7'/><text x='50' y='55' fill='%23d97706' font-size='10' text-anchor='middle' font-weight='bold'>HERMES</text></svg>"
+  },
+  {
+    "id": 10,
+    "title": "Rolex Submariner Vintage (1970s)",
+    "category": "collectibles",
+    "price": 2800.00,
+    "description": "",
+    "image_url": "/images/lots/omega-watch/2.jpg"
+  },
+  {
+    "id": 11,
+    "title": "Vintage Chanel Quilted Handbag",
+    "category": "fashion",
+    "price": 1200.00,
+    "description": "",
+    "image_url": "/images/lots/omega-watch/3.jpg"
+  },
+  {
+    "id": 12,
+    "title": "Vintage Garden Lamp - Wrought Iron",
+    "category": "home-garden",
+    "price": 150.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><path d='M50 20v60M35 80h30M40 30h20l-5-10h-10Z' stroke='%23777777' stroke-width='3' fill='none'/><circle cx='50' cy='45' r='10' fill='%23fef08a'/><text x='50' y='90' fill='%23c0a975' font-size='8' text-anchor='middle'>GARDEN LAMP</text></svg>"
+  },
+  {
+    "id": 13,
+    "title": "First Edition Harry Potter Book",
+    "category": "collectibles",
+    "price": 1500.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='30' y='20' width='40' height='55' fill='%23991b1b' rx='3'/><rect x='25' y='23' width='5' height='49' fill='%23b91c1c'/><line x1='40' y1='30' x2='60' y2='30' stroke='%23fcd34d' stroke-width='2'/><text x='50' y='90' fill='%23c0a975' font-size='8' text-anchor='middle'>RARE BOOK</text></svg>"
+  },
+  {
+    "id": 14,
+    "title": "Claude Monet Water Lilies - Museum Quality",
+    "category": "art",
+    "price": 200.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='20' y='20' width='60' height='45' fill='%231e3a8a' stroke='%23c0a975' stroke-width='2'/><ellipse cx='40' cy='40' rx='10' ry='4' fill='%2338bdf8'/><ellipse cx='60' cy='35' rx='12' ry='5' fill='%23a78bfa'/><text x='50' y='85' fill='%23c0a975' font-size='8' text-anchor='middle'>MONET ART</text></svg>"
+  },
+  {
+    "id": 15,
+    "title": "Abstract Oil Painting 24x36 Inches",
+    "category": "art",
+    "price": 500.00,
+    "description": "",
+    "image_url": "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100' fill='%231a1a1a'><rect width='100' height='100'/><rect x='20' y='20' width='60' height='45' fill='%233f6212' stroke='%23c0a975' stroke-width='2'/><path d='M25 25l40 30M30 55l35-25' stroke='red' stroke-width='4'/><text x='50' y='85' fill='%23c0a975' font-size='8' text-anchor='middle'>ABSTRACT ART</text></svg>"
+  },
+  {
+    "id": 16,
+    "title": "Antique Wooden Desk - Victorian Era",
+    "category": "home-garden",
+    "price": 450.00,
+    "description": "",
+    "image_url": "/images/lots/home-garden/1.jpg"
+  }
+]

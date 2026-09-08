@@ -1,0 +1,241 @@
+.auction-details {
+  padding: var(--space-2xl) 0;
+}
+
+.auction-details__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-3xl);
+  margin-bottom: var(--space-3xl);
+}
+
+/* ========================================
+   MEDIA SECTION
+   ======================================== */
+
+.auction-details__media {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(135deg, var(--color-bg-elevated) 0%, var(--color-surface-alt) 100%);
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-lg));
+}
+
+.auction-details__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--duration-slow) var(--ease-smooth);
+}
+
+.auction-details__media:hover img {
+  transform: scale(1.05);
+}
+
+.auction-details__media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: var(--color-border-strong);
+}
+
+/* ========================================
+   INFO SECTION
+   ======================================== */
+
+.auction-details__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.auction-details__info > .eyebrow {
+  margin-bottom: 0;
+}
+
+.auction-details__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.auction-details__title-row h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  line-height: 1.2;
+  flex: 1;
+}
+
+.auction-details__seller {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ========================================
+   BID PANEL
+   ======================================== */
+
+.auction-details__bid-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2xl);
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-alt) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.auction-details__bid-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-faint);
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.auction-details__bid-value {
+  display: block;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--color-accent-bright);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.auction-details__starting {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-faint);
+  font-weight: 500;
+}
+
+/* ========================================
+   WINNER / STATUS
+   ======================================== */
+
+.auction-details__winner {
+  background: linear-gradient(135deg, var(--color-success-bg) 0%, rgba(76, 154, 107, 0.08) 100%);
+  border: 1px solid rgba(76, 154, 107, 0.3);
+  color: var(--color-success);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ========================================
+   DESCRIPTION & DETAILS
+   ======================================== */
+
+.auction-details__description {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.auction-details__description h3 {
+  font-size: 1.1rem;
+  margin: 0 0 var(--space-md);
+  color: var(--color-text);
+}
+
+.auction-details__description p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.auction-details__history {
+  margin-bottom: var(--space-3xl);
+}
+
+.auction-details__history h2 {
+  font-size: 1.3rem;
+  margin-bottom: var(--space-lg);
+  color: var(--color-text);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .auction-details__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .auction-details__media {
+    position: static;
+  }
+
+  .auction-details__bid-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .auction-details {
+    padding: var(--space-lg) 0;
+  }
+
+  .auction-details__grid {
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .auction-details__title-row {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .auction-details__title-row h1 {
+    font-size: 1.6rem;
+  }
+
+  .auction-details__media {
+    aspect-ratio: 16 / 12;
+  }
+
+  .auction-details__bid-value {
+    font-size: 1.8rem;
+  }
+
+  .auction-details__description {
+    margin-top: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .auction-details__bid-panel {
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .auction-details__media {
+    aspect-ratio: 16 / 14;
+  }
+
+  .auction-details__bid-value {
+    font-size: 1.6rem;
+  }
+}
