@@ -5,7 +5,7 @@ import { useI18n } from "@/context/I18nContext";
 import { InputField, SelectField } from "@/components/common/FormField";
 import Button from "@/components/common/Button";
 import ErrorBanner from "@/components/common/ErrorBanner";
-import { extractErrorMessage } from "@/api/axiosClient";
+import { extractErrorMessage, extractFieldErrors } from "@/api/axiosClient";
 import { validateEmail, validatePassword, validateUsername } from "@/utils/validators";
 import type { UserRole } from "@/models/User";
 import "./Register.css";
@@ -20,6 +20,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("Buyer");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
@@ -33,13 +34,18 @@ export default function Register() {
     }
 
     setError(null);
+    setFieldErrors({});
     setIsSubmitting(true);
     try {
       await register({ username, email, password, role });
       navigate("/", { replace: true });
     } catch (err) {
-      const errorMessage = extractErrorMessage(err);
-      setError(errorMessage);
+      const backendFieldErrors = extractFieldErrors(err);
+      if (Object.keys(backendFieldErrors).length > 0) {
+        setFieldErrors(backendFieldErrors);
+      } else {
+        setError(extractErrorMessage(err));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -52,7 +58,7 @@ export default function Register() {
         <div className="auth-page__visual-content">
           <div className="auth-page__visual-icon">🚀</div>
           <p className="auth-page__visual-text">
-            Join our thriving auction community. Bid, sell, and win with confidence.
+            {t.auth.registerVisualText}
           </p>
         </div>
       </div>
@@ -74,6 +80,7 @@ export default function Register() {
               required
               minLength={2}
               autoComplete="username"
+              error={fieldErrors.Username}
             />
             <InputField
               label={t.auth.email}
@@ -82,6 +89,7 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+              error={fieldErrors.Email}
             />
             <InputField
               label={t.auth.password}
@@ -92,6 +100,7 @@ export default function Register() {
               minLength={6}
               hint={t.auth.passwordHint}
               autoComplete="new-password"
+              error={fieldErrors.Password}
             />
             <SelectField label={t.auth.role} value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
               <option value="Buyer">{t.auth.buyerOption}</option>

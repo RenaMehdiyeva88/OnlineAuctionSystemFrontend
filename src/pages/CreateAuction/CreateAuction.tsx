@@ -8,6 +8,7 @@ import Button from "@/components/common/Button";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import { extractErrorMessage } from "@/api/axiosClient";
 import { validateRequired, validatePositivePrice, validateFutureDateTime, validateImageUrl } from "@/utils/validators";
+import { useI18n } from "@/context/I18nContext";
 import "./CreateAuction.css";
 
 // F2: Sellers create an auction with title, description, image, starting price,
@@ -15,6 +16,7 @@ import "./CreateAuction.css";
 // <SellerRoute />.
 export default function CreateAuction() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [categories, setCategories] = useState<Category[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -33,12 +35,12 @@ export default function CreateAuction() {
     e.preventDefault();
 
     const validationError =
-      validateRequired(title, "Title") ??
-      validateRequired(description, "Description") ??
+      validateRequired(title, t.pages.createAuctionValidationTitle) ??
+      validateRequired(description, t.pages.createAuctionValidationDescription) ??
       validateImageUrl(imageUrl) ??
-      validatePositivePrice(startingPrice, "Starting price") ??
-      validateFutureDateTime(endTime, "Closing date & time") ??
-      (categoryId ? null : "Choose a category for your lot.");
+      validatePositivePrice(startingPrice, t.pages.createAuctionValidationPrice) ??
+      validateFutureDateTime(endTime, t.pages.createAuctionValidationEndTime) ??
+      (categoryId ? null : t.pages.createAuctionValidationCategory);
 
     if (validationError) {
       setError(validationError);
@@ -69,43 +71,43 @@ export default function CreateAuction() {
 
   return (
     <div className="container create-auction">
-      <span className="eyebrow">New listing</span>
-      <h1>List a new lot</h1>
-      <p>Give bidders what they need to trust the listing — clear photos, an honest description, and a fair starting price.</p>
+      <span className="eyebrow">{t.pages.createAuctionEyebrow}</span>
+      <h1>{t.pages.createAuctionTitle}</h1>
+      <p>{t.pages.createAuctionSubtitle}</p>
 
       {error ? <ErrorBanner message={error} /> : null}
 
       <form className="create-auction__form" onSubmit={handleSubmit}>
         <InputField
-          label="Title"
+          label={t.pages.createAuctionTitleField}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
           maxLength={200}
-          placeholder="e.g. 1970s Leica M4 35mm Camera"
+          placeholder={t.pages.createAuctionTitlePlaceholder}
         />
 
         <TextareaField
-          label="Description"
+          label={t.pages.createAuctionDescription}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
           maxLength={4000}
-          placeholder="Condition, provenance, included accessories…"
+          placeholder={t.pages.createAuctionDescPlaceholder}
         />
 
         <InputField
-          label="Image URL"
+          label={t.pages.createAuctionImage}
           type="url"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           placeholder="https://…"
-          hint="Link to a photo of the item. Optional, but listings with photos get more bids."
+          hint={t.pages.createAuctionImageHint}
         />
 
         <div className="create-auction__row">
           <InputField
-            label="Starting price ($)"
+            label={t.pages.createAuctionStartingPrice}
             type="number"
             min={0.01}
             step="0.01"
@@ -113,8 +115,8 @@ export default function CreateAuction() {
             onChange={(e) => setStartingPrice(e.target.value)}
             required
           />
-          <SelectField label="Category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
-            <option value="">Select a category</option>
+          <SelectField label={t.pages.createAuctionCategory} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+            <option value="">{t.pages.createAuctionCategoryPlaceholder}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -124,7 +126,7 @@ export default function CreateAuction() {
         </div>
 
         <InputField
-          label="Closing date & time"
+          label={t.pages.createAuctionEndTime}
           type="datetime-local"
           value={endTime}
           min={minDateTime}
@@ -133,7 +135,7 @@ export default function CreateAuction() {
         />
 
         <Button type="submit" size="lg" isLoading={isSubmitting}>
-          Publish lot
+          {t.pages.createAuctionPublish}
         </Button>
       </form>
     </div>

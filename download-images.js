@@ -30,6 +30,8 @@ const CATEGORIES = [
   { id: 'nike-shoes', query: 'nike running shoes' },
   { id: 'ancient-coins', query: 'ancient roman coins' },
   { id: 'auction-hero', query: 'auction gavel' },
+  { id: 'category-art', query: 'abstract oil painting canvas art' },
+  { id: 'category-home-garden', query: 'cozy living room interior' },
 ];
 
 const IMAGES_PER_CATEGORY = 10;

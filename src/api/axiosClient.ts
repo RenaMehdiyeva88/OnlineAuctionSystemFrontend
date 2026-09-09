@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse, type InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import {
   API_BASE_URL,
   AUTH_TOKEN_STORAGE_KEY,
@@ -59,27 +59,13 @@ async function refreshAccessToken(): Promise<string> {
   return auth.accessToken;
 }
 
+// NOTE: the backend does NOT wrap responses in an envelope like
+// { data, statusCode, isSuccess } — controllers return the DTO directly via
+// Ok(result). An earlier version of this interceptor unwrapped a
+// non-existent "ApiResponse<T>" shape; that check silently never matched
+// anything, so it's removed rather than left as confusing dead code.
 axiosClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    // Log raw response for debugging
-    console.log("[API Response]", response.config.url, response.status, response.data);
-
-    // Unwrap ApiResponse<T> wrapper if present (backend wraps responses)
-    // Pattern: { data: T, statusCode, isSuccess, message }
-    if (
-      response.data &&
-      typeof response.data === "object" &&
-      !Array.isArray(response.data) &&
-      "data" in response.data &&
-      "statusCode" in response.data
-    ) {
-      console.log("[Interceptor] Unwrapping ApiResponse, extracted:", response.data.data);
-      response.data = (response.data as { data: unknown }).data;
-    } else {
-      console.log("[Interceptor] Response is already unwrapped or is raw data");
-    }
-    return response;
-  },
+  (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
@@ -112,55 +98,32 @@ axiosClient.interceptors.response.use(
 
 export default axiosClient;
 
-// Normalizes backend error responses (ValidationException / NotFoundException /
-// ForbiddenException / etc. from the API) into a single readable message so
-// every page can display errors consistently.
-export function extractErrorMessage(error: unknown): string {
-  // Log full error to console for debugging
-  if (axios.isAxiosError(error)) {
-    console.error('[API Error]', error.response?.status, error.response?.data);
-  } else {
-    console.error('[Error]', error);
-  }
+// Shape returned by ExceptionHandlingMiddleware / ValidationFilter on the
+// backend: { status, message, errors } where errors is a dictionary of
+// field name -> array of messages (System.Text.Json camelCases the C#
+// property names, so it arrives as lowercase "status"/"message"/"errors").
+interface BackendErrorPayload {
+  status?: number;
+  message?: string;
+  errors?: Record<string, string[]> | null;
+}
 
+// Normalizes backend error responses (ValidationException / NotFoundException /
+// ForbiddenException / ConflictException / etc.) into a single readable
+// message so every page can display errors consistently.
+export function extractErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError;
-    const responseData = axiosError.response?.data as Record<string, unknown> | undefined;
-    
-    // Try to extract specific error message from response
-    if (responseData?.message) {
-      return String(responseData.message);
+    const data = error.response?.data as BackendErrorPayload | string | undefined;
+
+    if (typeof data === "string") return data;
+    if (data?.errors) {
+      const firstFieldErrors = Object.values(data.errors)[0];
+      if (firstFieldErrors?.length) return firstFieldErrors[0];
     }
-    if (responseData?.error) {
-      return String(responseData.error);
-    }
-    if (responseData?.detail) {
-      return String(responseData.detail);
-    }
-    if (responseData?.errors && typeof responseData.errors === 'object') {
-      const errors = responseData.errors;
-      if (Array.isArray(errors) && errors.length > 0) {
-        return String(errors[0]);
-      } else if (typeof errors === 'object') {
-        const firstError = Object.values(errors)[0];
-        if (typeof firstError === 'string') {
-          return firstError;
-        }
-        if (Array.isArray(firstError) && firstError.length > 0) {
-          return String(firstError[0]);
-        }
-      }
-    }
-    
-    if (typeof responseData === 'string') {
-      return responseData;
-    }
-    
-    // Provide user-friendly messages based on status code
-    const status = axiosError.response?.status;
+    if (data?.message) return data.message;
+
+    const status = error.response?.status;
     switch (status) {
-      case 400:
-        return "Invalid request. Please check your input and try again.";
       case 401:
         return "Please log in to continue.";
       case 403:
@@ -177,19 +140,32 @@ export function extractErrorMessage(error: unknown): string {
       case 504:
         return "Server is temporarily unavailable. Please try again later.";
       case undefined:
-        // Network error
         if (!navigator.onLine) {
           return "No internet connection. Please check your network and try again.";
         }
         return "Unable to connect to the server. Please check your connection and try again.";
       default:
-        return axiosError.response?.statusText || "An error occurred. Please try again.";
+        return error.response?.statusText || "An error occurred. Please try again.";
     }
   }
-  
-  if (error instanceof Error) {
-    return error.message;
-  }
-  
+
+  if (error instanceof Error) return error.message;
   return "An unexpected error occurred. Please try again.";
+}
+
+// Field-level companion to extractErrorMessage — returns { fieldName: message }
+// so forms can show an error under the specific input instead of (or in
+// addition to) a generic banner. Field names come straight from FluentValidation's
+// PropertyName, so they match the request DTO's property names exactly
+// (e.g. "Email", "Password", "Title") — case-sensitive.
+export function extractFieldErrors(error: unknown): Record<string, string> {
+  if (!axios.isAxiosError(error)) return {};
+  const data = error.response?.data as BackendErrorPayload | undefined;
+  if (!data?.errors) return {};
+
+  const fieldErrors: Record<string, string> = {};
+  for (const [field, messages] of Object.entries(data.errors)) {
+    if (messages?.length) fieldErrors[field] = messages[0];
+  }
+  return fieldErrors;
 }

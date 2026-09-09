@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import userApi from "@/api/userApi";
+import userApi, { type SellerDashboard as SellerDashboardData } from "@/api/userApi";
 import { useAuth } from "@/hooks/useAuth";
-import type { SellerAuction } from "@/models/Auction";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
 import StatusBadge from "@/components/common/Badge";
 import Button from "@/components/common/Button";
@@ -10,15 +9,13 @@ import Spinner from "@/components/common/Spinner";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import EmptyState from "@/components/common/EmptyState";
 import { extractErrorMessage } from "@/api/axiosClient";
+import { useI18n } from "@/context/I18nContext";
 import "./SellerDashboard.css";
 
-// F6: seller dashboard — active + completed auctions, status, current
-// highest bid, bid count, winner for completed lots.
-// Backend returns a flat list (GET /api/seller/dashboard, scoped to the
-// current user via the JWT) — split into active/completed here by status.
 export default function SellerDashboard() {
   const { user } = useAuth();
-  const [auctions, setAuctions] = useState<SellerAuction[] | null>(null);
+  const { t } = useI18n();
+  const [dashboard, setDashboard] = useState<SellerDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"active" | "completed">("active");
@@ -27,32 +24,26 @@ export default function SellerDashboard() {
     if (!user) return;
     userApi
       .getSellerDashboard()
-      .then(setAuctions)
+      .then(setDashboard)
       .catch((err) => setError(extractErrorMessage(err)))
       .finally(() => setIsLoading(false));
   }, [user]);
 
-  const dashboard = useMemo(() => {
-    const activeAuctions = (auctions ?? []).filter((a) => a.status === "Active");
-    const completedAuctions = (auctions ?? []).filter((a) => a.status !== "Active");
-    return { activeAuctions, completedAuctions };
-  }, [auctions]);
-
-  if (isLoading) return <Spinner fullPage label="Loading your dashboard…" />;
+  if (isLoading) return <Spinner fullPage label={t.pages.sellerDashboardLoading} />;
   if (error) return <div className="container"><ErrorBanner message={error} /></div>;
-  if (!auctions) return null;
+  if (!dashboard) return null;
 
-  const rows: SellerAuction[] = tab === "active" ? dashboard.activeAuctions : dashboard.completedAuctions;
+  const rows = tab === "active" ? dashboard.activeAuctions : dashboard.completedAuctions;
 
   return (
     <div className="container seller-dashboard">
       <div className="seller-dashboard__heading">
         <div>
-          <span className="eyebrow">Your listings</span>
-          <h1>Seller dashboard</h1>
+          <span className="eyebrow">{t.pages.sellerDashboardEyebrow}</span>
+          <h1>{t.pages.sellerDashboardTitle}</h1>
         </div>
         <Link to="/seller/auctions/new">
-          <Button>+ New auction</Button>
+          <Button>{t.pages.sellerDashboardNewAuction}</Button>
         </Link>
       </div>
 
@@ -61,28 +52,28 @@ export default function SellerDashboard() {
           className={`seller-dashboard__tab ${tab === "active" ? "is-active" : ""}`}
           onClick={() => setTab("active")}
         >
-          Active ({dashboard.activeAuctions.length})
+          {t.pages.sellerDashboardActiveTab} ({dashboard.activeAuctions.length})
         </button>
         <button
           className={`seller-dashboard__tab ${tab === "completed" ? "is-active" : ""}`}
           onClick={() => setTab("completed")}
         >
-          Completed ({dashboard.completedAuctions.length})
+          {t.pages.sellerDashboardCompletedTab} ({dashboard.completedAuctions.length})
         </button>
       </div>
 
       {rows.length === 0 ? (
         <EmptyState
-          title={tab === "active" ? "No active listings" : "No completed auctions yet"}
+          title={tab === "active" ? t.pages.sellerDashboardNoActive : t.pages.sellerDashboardNoCompleted}
           description={
             tab === "active"
-              ? "Create your first lot to start receiving bids."
-              : "Once your active lots close, they'll show up here with the final winner."
+              ? t.pages.sellerDashboardNoActiveDesc
+              : t.pages.sellerDashboardNoCompletedDesc
           }
           action={
             tab === "active" ? (
               <Link to="/seller/auctions/new">
-                <Button>List your first lot</Button>
+                <Button>{t.pages.sellerDashboardListFirst}</Button>
               </Link>
             ) : undefined
           }
@@ -91,12 +82,12 @@ export default function SellerDashboard() {
         <table className="seller-table">
           <thead>
             <tr>
-              <th>Lot</th>
-              <th>Status</th>
-              <th>Current bid</th>
-              <th>Bids</th>
-              <th>Closes</th>
-              {tab === "completed" && <th>Winner</th>}
+              <th>{t.pages.sellerDashboardColLot}</th>
+              <th>{t.pages.sellerDashboardColStatus}</th>
+              <th>{t.pages.sellerDashboardColCurrentBid}</th>
+              <th>{t.pages.sellerDashboardColBids}</th>
+              <th>{t.pages.sellerDashboardColCloses}</th>
+              {tab === "completed" && <th>{t.pages.sellerDashboardColWinner}</th>}
               <th aria-label="Actions" />
             </tr>
           </thead>
@@ -110,11 +101,11 @@ export default function SellerDashboard() {
                 <td className="mono">{formatCurrency(auction.currentHighestBid)}</td>
                 <td className="mono">{auction.totalBids}</td>
                 <td>{formatDateTime(auction.endTime)}</td>
-                {tab === "completed" && <td>{auction.winnerName ?? "No bids placed"}</td>}
+                {tab === "completed" && <td>{auction.winnerName ?? t.pages.sellerDashboardNoBids}</td>}
                 <td>
                   <Link to={`/auctions/${auction.id}`}>
                     <Button size="sm" variant="secondary">
-                      View
+                      {t.pages.sellerDashboardView}
                     </Button>
                   </Link>
                 </td>

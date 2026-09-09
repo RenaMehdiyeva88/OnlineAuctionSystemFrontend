@@ -49,7 +49,7 @@ export default function Login() {
         <div className="auth-page__visual-content">
           <div className="auth-page__visual-icon">🔐</div>
           <p className="auth-page__visual-text">
-            Secure access to your auction account. Real-time bidding. Transparent deals.
+            {t.auth.loginVisualText}
           </p>
         </div>
       </div>

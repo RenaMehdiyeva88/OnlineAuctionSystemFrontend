@@ -93,4 +93,15 @@
   .notification-actions button {
     width: 100%;
   }
+  .notification-card--read {
+  opacity: 0.6;
+}
+.notification-card--read .notification-message {
+  font-weight: 400;
+}
+.notifications-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 }

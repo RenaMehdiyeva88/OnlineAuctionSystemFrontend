@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import auctionApi from "@/api/auctionApi";
 import bidApi from "@/api/bidApi";
 import { useI18n } from "@/context/I18nContext";
@@ -20,6 +21,8 @@ import ErrorBanner from "@/components/common/ErrorBanner";
 import { extractErrorMessage } from "@/api/axiosClient";
 import "./AuctionDetails.css";
 
+const BID_HISTORY_PAGE_SIZE = 20;
+
 export default function AuctionDetails() {
   const { t } = useI18n();
   const { id } = useParams<{ id: string }>();
@@ -28,6 +31,9 @@ export default function AuctionDetails() {
 
   const [auction, setAuction] = useState<Auction | null>(null);
   const [bids, setBids] = useState<Bid[]>([]);
+  const [bidPage, setBidPage] = useState(1);
+  const [hasMoreBids, setHasMoreBids] = useState(false);
+  const [isLoadingMoreBids, setIsLoadingMoreBids] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
@@ -35,11 +41,15 @@ export default function AuctionDetails() {
 
   const loadAuction = useCallback(() => {
     if (!id) return Promise.resolve();
-    return Promise.all([auctionApi.getById(id), bidApi.getHistory(id)]).then(([a, b]) => {
-      setAuction(a);
-      setBids(b);
-      setHasEnded(a.status !== "Active");
-    });
+    return Promise.all([auctionApi.getById(id), bidApi.getHistory(id, 1, BID_HISTORY_PAGE_SIZE)]).then(
+      ([a, bidPageResult]) => {
+        setAuction(a);
+        setBids(bidPageResult.items);
+        setBidPage(1);
+        setHasMoreBids(bidPageResult.hasNextPage);
+        setHasEnded(a.status !== "Active");
+      }
+    );
   }, [id]);
 
   useEffect(() => {
@@ -49,6 +59,22 @@ export default function AuctionDetails() {
       .catch((err) => setError(extractErrorMessage(err)))
       .finally(() => setIsLoading(false));
   }, [loadAuction]);
+
+  async function handleLoadMoreBids() {
+    if (!id || isLoadingMoreBids) return;
+    setIsLoadingMoreBids(true);
+    try {
+      const nextPage = bidPage + 1;
+      const result = await bidApi.getHistory(id, nextPage, BID_HISTORY_PAGE_SIZE);
+      setBids((prev) => [...prev, ...result.items]);
+      setBidPage(nextPage);
+      setHasMoreBids(result.hasNextPage);
+    } catch (err) {
+      pushToast(extractErrorMessage(err), "error");
+    } finally {
+      setIsLoadingMoreBids(false);
+    }
+  }
 
   // F3: real backend SignalR feed — no simulated/fake real-time behavior.
   // NOTE: the backend only pushes OutBid/AuctionWon/AuctionClosed to the
@@ -86,7 +112,21 @@ export default function AuctionDetails() {
       // our own bid immediately instead of waiting for one.
       await loadAuction();
     } catch (err) {
-      pushToast(extractErrorMessage(err), "error");
+      // F3/RowVersion: the backend now guards against two people bidding on
+      // the same auction at nearly the same instant via optimistic
+      // concurrency, surfaced to the client as 409 Conflict. That's a
+      // meaningfully different situation from "your bid was too low" — the
+      // person did everything right, they just lost a race — so it gets its
+      // own message and an automatic refresh instead of a generic error.
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        pushToast(
+          "Someone just placed a bid on this auction before yours went through. Refreshing the latest price…",
+          "outbid"
+        );
+        await loadAuction().catch((loadErr) => setError(extractErrorMessage(loadErr)));
+      } else {
+        pushToast(extractErrorMessage(err), "error");
+      }
     } finally {
       setIsSubmittingBid(false);
     }
@@ -154,7 +194,12 @@ export default function AuctionDetails() {
 
       <section className="auction-details__history">
         <h2>{t.auction.bidHistory}</h2>
-        <BidHistoryList bids={bids} />
+        <BidHistoryList
+          bids={bids}
+          hasMore={hasMoreBids}
+          isLoadingMore={isLoadingMoreBids}
+          onLoadMore={handleLoadMoreBids}
+        />
       </section>
     </div>
   );

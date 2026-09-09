@@ -50,3 +50,8 @@
   color: var(--color-accent-bright);
   white-space: nowrap;
 }
+.bid-history__load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}

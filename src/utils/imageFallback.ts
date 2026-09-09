@@ -1,385 +1,520 @@
 /**
  * Image Fallback System for Auctions
- * Uses loremflickr.com which searches by keyword to provide relevant images per category
- * Provides deterministic, category-based fallback images when auction.imageUrl is null/empty
+ *
+ * Provides deterministic images for auctions when no real image is available.
+ *
+ * Priority:
+ * 1. Existing auction image
+ * 2. Local product gallery for known products
+ * 3. Category-based loremflickr images
+ * 4. Generic fallback image
  */
 
-// Real image URLs mapped to actual database categories (12 per category from loremflickr.com)
-// loremflickr.com searches by keyword and lock parameter ensures deterministic/stable results
+/* =========================================================
+   CATEGORY IMAGES
+   ========================================================= */
+
+const createLoremFlickrImages = (
+  keyword: string,
+  count: number = 12,
+  width: number = 600,
+  height: number = 450
+): string[] => {
+  return Array.from({ length: count }, (_, index) => {
+    const lock = index + 1;
+    return `https://loremflickr.com/${width}/${height}/${keyword}/all?lock=${lock}`;
+  });
+};
+
 export const CATEGORY_IMAGES: Record<string, string[]> = {
-  // Art - painting keyword
-  art: [
-    "https://loremflickr.com/600/450/painting/all?lock=1",
-    "https://loremflickr.com/600/450/painting/all?lock=2",
-    "https://loremflickr.com/600/450/painting/all?lock=3",
-    "https://loremflickr.com/600/450/painting/all?lock=4",
-    "https://loremflickr.com/600/450/painting/all?lock=5",
-    "https://loremflickr.com/600/450/painting/all?lock=6",
-    "https://loremflickr.com/600/450/painting/all?lock=7",
-    "https://loremflickr.com/600/450/painting/all?lock=8",
-    "https://loremflickr.com/600/450/painting/all?lock=9",
-    "https://loremflickr.com/600/450/painting/all?lock=10",
-    "https://loremflickr.com/600/450/painting/all?lock=11",
-    "https://loremflickr.com/600/450/painting/all?lock=12",
-  ],
-  // Collectibles - antique keyword
-  collectibles: [
-    "https://loremflickr.com/600/450/antique/all?lock=1",
-    "https://loremflickr.com/600/450/antique/all?lock=2",
-    "https://loremflickr.com/600/450/antique/all?lock=3",
-    "https://loremflickr.com/600/450/antique/all?lock=4",
-    "https://loremflickr.com/600/450/antique/all?lock=5",
-    "https://loremflickr.com/600/450/antique/all?lock=6",
-    "https://loremflickr.com/600/450/antique/all?lock=7",
-    "https://loremflickr.com/600/450/antique/all?lock=8",
-    "https://loremflickr.com/600/450/antique/all?lock=9",
-    "https://loremflickr.com/600/450/antique/all?lock=10",
-    "https://loremflickr.com/600/450/antique/all?lock=11",
-    "https://loremflickr.com/600/450/antique/all?lock=12",
-  ],
-  // Electronics - electronics keyword
-  electronics: [
-    "https://loremflickr.com/600/450/electronics/all?lock=1",
-    "https://loremflickr.com/600/450/electronics/all?lock=2",
-    "https://loremflickr.com/600/450/electronics/all?lock=3",
-    "https://loremflickr.com/600/450/electronics/all?lock=4",
-    "https://loremflickr.com/600/450/electronics/all?lock=5",
-    "https://loremflickr.com/600/450/electronics/all?lock=6",
-    "https://loremflickr.com/600/450/electronics/all?lock=7",
-    "https://loremflickr.com/600/450/electronics/all?lock=8",
-    "https://loremflickr.com/600/450/electronics/all?lock=9",
-    "https://loremflickr.com/600/450/electronics/all?lock=10",
-    "https://loremflickr.com/600/450/electronics/all?lock=11",
-    "https://loremflickr.com/600/450/electronics/all?lock=12",
-  ],
-  // Fashion - fashion keyword
-  fashion: [
-    "https://loremflickr.com/600/450/fashion/all?lock=1",
-    "https://loremflickr.com/600/450/fashion/all?lock=2",
-    "https://loremflickr.com/600/450/fashion/all?lock=3",
-    "https://loremflickr.com/600/450/fashion/all?lock=4",
-    "https://loremflickr.com/600/450/fashion/all?lock=5",
-    "https://loremflickr.com/600/450/fashion/all?lock=6",
-    "https://loremflickr.com/600/450/fashion/all?lock=7",
-    "https://loremflickr.com/600/450/fashion/all?lock=8",
-    "https://loremflickr.com/600/450/fashion/all?lock=9",
-    "https://loremflickr.com/600/450/fashion/all?lock=10",
-    "https://loremflickr.com/600/450/fashion/all?lock=11",
-    "https://loremflickr.com/600/450/fashion/all?lock=12",
-  ],
-  // Home & Garden - furniture keyword
-  "home & garden": [
-    "https://loremflickr.com/600/450/furniture/all?lock=1",
-    "https://loremflickr.com/600/450/furniture/all?lock=2",
-    "https://loremflickr.com/600/450/furniture/all?lock=3",
-    "https://loremflickr.com/600/450/furniture/all?lock=4",
-    "https://loremflickr.com/600/450/furniture/all?lock=5",
-    "https://loremflickr.com/600/450/furniture/all?lock=6",
-    "https://loremflickr.com/600/450/furniture/all?lock=7",
-    "https://loremflickr.com/600/450/furniture/all?lock=8",
-    "https://loremflickr.com/600/450/furniture/all?lock=9",
-    "https://loremflickr.com/600/450/furniture/all?lock=10",
-    "https://loremflickr.com/600/450/furniture/all?lock=11",
-    "https://loremflickr.com/600/450/furniture/all?lock=12",
-  ],
-  // Sports - sports keyword
-  sports: [
-    "https://loremflickr.com/600/450/sports/all?lock=1",
-    "https://loremflickr.com/600/450/sports/all?lock=2",
-    "https://loremflickr.com/600/450/sports/all?lock=3",
-    "https://loremflickr.com/600/450/sports/all?lock=4",
-    "https://loremflickr.com/600/450/sports/all?lock=5",
-    "https://loremflickr.com/600/450/sports/all?lock=6",
-    "https://loremflickr.com/600/450/sports/all?lock=7",
-    "https://loremflickr.com/600/450/sports/all?lock=8",
-    "https://loremflickr.com/600/450/sports/all?lock=9",
-    "https://loremflickr.com/600/450/sports/all?lock=10",
-    "https://loremflickr.com/600/450/sports/all?lock=11",
-    "https://loremflickr.com/600/450/sports/all?lock=12",
-  ],
+  art: createLoremFlickrImages("painting"),
+  collectibles: createLoremFlickrImages("antique"),
+  electronics: createLoremFlickrImages("electronics"),
+  fashion: createLoremFlickrImages("fashion"),
+  "home & garden": createLoremFlickrImages("furniture"),
+  sports: createLoremFlickrImages("sports"),
 };
 
-// General fallback images for categories without specific mapping
-export const GENERAL_FALLBACK_IMAGES: string[] = [
-  "https://loremflickr.com/600/450/vintage/all?lock=1",
-  "https://loremflickr.com/600/450/vintage/all?lock=2",
-  "https://loremflickr.com/600/450/vintage/all?lock=3",
-  "https://loremflickr.com/600/450/vintage/all?lock=4",
-  "https://loremflickr.com/600/450/vintage/all?lock=5",
-  "https://loremflickr.com/600/450/vintage/all?lock=6",
-];
+/* =========================================================
+   GENERAL FALLBACK
+   ========================================================= */
 
-// Category thumbnail images for "Popular collections" section (4:3 aspect ratio)
+export const GENERAL_FALLBACK_IMAGES: string[] =
+  createLoremFlickrImages("vintage", 6);
+
+/* =========================================================
+   CATEGORY THUMBNAILS
+   ========================================================= */
+
 export const CATEGORY_THUMBNAILS: Record<string, string> = {
-  art: "https://loremflickr.com/400/300/painting/all?lock=1",
-  collectibles: "https://loremflickr.com/400/300/antique/all?lock=1",
-  electronics: "https://loremflickr.com/400/300/electronics/all?lock=1",
-  fashion: "https://loremflickr.com/400/300/fashion/all?lock=1",
-  "home & garden": "https://loremflickr.com/400/300/furniture/all?lock=1",
-  sports: "https://loremflickr.com/400/300/sports/all?lock=1",
+  art: "/images/lots/category-art/1.jpg",
+  collectibles: "/images/lots/ancient-coins/1.jpg",
+  electronics: "/images/lots/canon-camera/1.jpg",
+  fashion: "/images/lots/rayban-sunglasses/1.jpg",
+  "home & garden": "/images/lots/category-home-garden/1.jpg",
+  sports: "/images/lots/baseball-glove/1.jpg",
 };
 
-// Hero section background - auction gavel/premium theme from Unsplash
-export const HERO_BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1551836022-4ad2b3d9790a?w=1600&q=80";
+/* =========================================================
+   HERO IMAGE
+   ========================================================= */
+
+// Now using a real, locally-downloaded photo (via download-images.js,
+// category "auction-hero") instead of an external CDN — images.unsplash.com
+// was failing to load in the browser for this project, so this removes
+// that dependency entirely for the hero banner.
+export const HERO_BACKGROUND_IMAGE = "/images/lots/auction-hero/1.jpg";
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
 /**
- * Deterministic hash function: converts string to number for consistent image selection
- * Ensures same auction always gets same image on reload
- * @param str Input string (typically auction.id)
- * @returns Numeric hash
+ * Normalize text for reliable comparisons.
+ *
+ * Examples:
+ * "Home & Garden" -> "home garden"
+ * "  Electronics  " -> "electronics"
  */
-function simpleHash(str: string): number {
+function normalize(value?: string | null): string {
+  return (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Deterministic hash.
+ *
+ * Same string always produces the same number.
+ */
+function simpleHash(value: string): number {
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
   }
+
   return Math.abs(hash);
 }
 
 /**
- * Get image URL for an auction with smart fallback logic
- * 1. If auction has imageUrl - use it
- * 2. If categoryName matches CATEGORY_IMAGES - use category image (deterministic if multiple)
- * 3. Otherwise - use random-but-deterministic GENERAL_FALLBACK_IMAGES
+ * Safely get an image from an array.
+ */
+function getDeterministicImage(images: string[], seed: string): string {
+  if (images.length === 0) {
+    return GENERAL_FALLBACK_IMAGES[0];
+  }
+
+  const index = simpleHash(seed) % images.length;
+  return images[index];
+}
+
+/**
+ * Find category images using normalized exact/partial matching.
  *
- * @param auction Auction object with id, imageUrl, and optional categoryName
- * @param size Optional size parameter ("card" or "detail") - for future use
- * @returns Final image URL (never null or empty)
+ * IMPORTANT:
+ * Empty category names never match anything.
+ */
+function findCategoryImages(categoryName?: string | null): string[] | null {
+  const category = normalize(categoryName);
+
+  if (!category) {
+    return null;
+  }
+
+  for (const [key, images] of Object.entries(CATEGORY_IMAGES)) {
+    const normalizedKey = normalize(key);
+
+    if (
+      category === normalizedKey ||
+      category.includes(normalizedKey) ||
+      normalizedKey.includes(category)
+    ) {
+      return images;
+    }
+  }
+
+  return null;
+}
+
+/* =========================================================
+   AUCTION IMAGE
+   ========================================================= */
+
+/**
+ * Get the best available image for an auction.
+ *
+ * Priority:
+ * 1. auction.imageUrl
+ * 2. category-specific fallback
+ * 3. general fallback
  */
 export function getAuctionImage(
   auction: {
-    id: string;
-    imageUrl: string | null | undefined;
-    categoryName?: string;
+    id?: string;
+    imageUrl?: string | null;
+    categoryName?: string | null;
   },
-  size?: "card" | "detail"
+  _size?: "card" | "detail"
 ): string {
-  // 1. If auction has a real image URL, use it immediately
-  if (auction.imageUrl && auction.imageUrl.trim() !== "") {
-    return auction.imageUrl;
+  // 1. Real image from backend
+  if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
+    return auction.imageUrl.trim();
   }
 
-  // 2. Try to find category-specific fallback
-  if (auction.categoryName) {
-    const categoryKey = auction.categoryName.toLowerCase();
+  // 2. Category-specific fallback
+  const categoryImages = findCategoryImages(auction.categoryName);
 
-    // Check all category keys for a match
-    for (const [key, images] of Object.entries(CATEGORY_IMAGES)) {
-      if (categoryKey.includes(key) || key.includes(categoryKey)) {
-        // If category has multiple images, pick deterministically based on auction.id
-        const imageIndex = simpleHash(auction.id) % images.length;
-        return images[imageIndex];
-      }
-    }
+  if (categoryImages) {
+    return getDeterministicImage(
+      categoryImages,
+      auction.id ?? auction.categoryName ?? "auction"
+    );
   }
 
-  // 3. Fallback to random-but-deterministic general image
-  const imageIndex = simpleHash(auction.id) % GENERAL_FALLBACK_IMAGES.length;
-  return GENERAL_FALLBACK_IMAGES[imageIndex];
+  // 3. Generic fallback
+  return getDeterministicImage(GENERAL_FALLBACK_IMAGES, auction.id ?? "auction");
 }
 
-/**
- * Get category preview image (for category cards/thumbnails)
- * Always returns the first image from category's image array
- * @param categoryName Category name from database (e.g., "Electronics", "Art")
- * @returns Image URL suitable for category preview
- */
-export function getCategoryImage(categoryName: string): string {
-  const categoryKey = categoryName.toLowerCase();
+/* =========================================================
+   CATEGORY IMAGE
+   ========================================================= */
 
-  for (const [key, images] of Object.entries(CATEGORY_IMAGES)) {
-    if (categoryKey.includes(key) || key.includes(categoryKey)) {
-      return images[0]; // Always first image for category preview
-    }
+/**
+ * Get category preview image.
+ */
+export function getCategoryImage(categoryName?: string | null): string {
+  const categoryImages = findCategoryImages(categoryName);
+
+  if (categoryImages && categoryImages.length > 0) {
+    return categoryImages[0];
   }
 
-  return GENERAL_FALLBACK_IMAGES[0]; // Default fallback
+  return GENERAL_FALLBACK_IMAGES[0];
 }
 
-/**
- * Get category thumbnail image for "Popular collections" section
- * Uses CATEGORY_THUMBNAILS or falls back to first image in category
- * @param categoryName Category name from database
- * @returns Thumbnail image URL for category preview
- */
-export function getCategoryThumbnail(categoryName: string): string {
-  const categoryKey = categoryName.toLowerCase();
+/* =========================================================
+   CATEGORY THUMBNAIL
+   ========================================================= */
 
-  // First check CATEGORY_THUMBNAILS
+/**
+ * Get thumbnail for Popular Collections.
+ */
+export function getCategoryThumbnail(categoryName?: string | null): string {
+  const category = normalize(categoryName);
+
+  if (!category) {
+    return GENERAL_FALLBACK_IMAGES[0];
+  }
+
   for (const [key, url] of Object.entries(CATEGORY_THUMBNAILS)) {
-    if (categoryKey.includes(key) || key.includes(categoryKey)) {
+    const normalizedKey = normalize(key);
+
+    if (
+      category === normalizedKey ||
+      category.includes(normalizedKey) ||
+      normalizedKey.includes(category)
+    ) {
       return url;
     }
   }
 
-  // Fall back to first image from category
   return getCategoryImage(categoryName);
 }
 
-/**
- * Get placeholder image when primary image fails to load
- * Returns loremflickr fallback with category context
- * @param categoryName Category name from database
- * @returns Placeholder loremflickr URL for failed image state
- */
-export function getPlaceholderImage(categoryName: string): string {
-  // Use loremflickr with category-appropriate keyword, deterministic lock
-  const categoryKey = categoryName.toLowerCase();
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
 
-  // Map categories to keywords for loremflickr
-  const keywordMap: Record<string, string> = {
-    art: "painting",
-    collectibles: "antique",
-    electronics: "electronics",
-    fashion: "fashion",
-    "home & garden": "furniture",
-    sports: "sports",
-  };
-
-  let keyword = "vintage"; // default fallback
-
-  for (const [key, kw] of Object.entries(keywordMap)) {
-    if (categoryKey.includes(key) || key.includes(categoryKey)) {
-      keyword = kw;
-      break;
-    }
-  }
-
-  // Return loremflickr URL with placeholder lock
-  return `https://loremflickr.com/600/450/${keyword}/all?lock=13`;
-}
-
-/**
- * Map database category names to gallery folder IDs
- * Used to locate local images in /public/images/lots/<folderID>/
- */
-const CATEGORY_TO_FOLDER_ID: Record<string, string> = {
-  // Premium auction categories (5 categories × 5 images each)
-  "ancient-coins": "ancient-coins",
-  "omega-watch": "omega-watch",
-  "nes-console": "nes-console",
-  "nike-shoes": "nike-shoes",
-  "canon-camera": "canon-camera",
-  
-  // Keywords/aliases for category detection
-  "ancient": "ancient-coins",
-  "coin": "ancient-coins",
-  "coins": "ancient-coins",
-  "numismatic": "ancient-coins",
-  
-  "omega": "omega-watch",
-  "watch": "omega-watch",
-  "speedmaster": "omega-watch",
-  "seamaster": "omega-watch",
-  "luxury watch": "omega-watch",
-  
-  "nes": "nes-console",
-  "nintendo": "nes-console",
-  "console": "nes-console",
-  "gaming": "nes-console",
-  "retro gaming": "nes-console",
-  
-  "nike": "nike-shoes",
-  "shoes": "nike-shoes",
-  "sneaker": "nike-shoes",
-  "air jordan": "nike-shoes",
-  "dunk": "nike-shoes",
-  
-  "camera": "canon-camera",
-  "canon": "canon-camera",
-  "lens": "canon-camera",
-  "photography": "canon-camera",
-  "film": "canon-camera",
-  "electronics": "canon-camera",
+const CATEGORY_KEYWORDS: Record<string, string> = {
+  art: "painting",
+  collectibles: "antique",
+  electronics: "electronics",
+  fashion: "fashion",
+  "home & garden": "furniture",
+  sports: "sports",
 };
 
 /**
- * Get local gallery images for an auction
- * Returns array of paths to local images: /images/lots/<category>/1.jpg through 5.jpg
- * 
- * @param title Auction title (for exact matching)
- * @param categoryName Category from database or product name
- * @param limit Number of images to return (default 5)
- * @returns Array of image URLs/paths
+ * Get placeholder image for a failed image.
+ */
+export function getPlaceholderImage(categoryName?: string | null): string {
+  const category = normalize(categoryName);
+
+  let keyword = "vintage";
+
+  if (category) {
+    for (const [key, value] of Object.entries(CATEGORY_KEYWORDS)) {
+      const normalizedKey = normalize(key);
+
+      if (
+        category === normalizedKey ||
+        category.includes(normalizedKey) ||
+        normalizedKey.includes(category)
+      ) {
+        keyword = value;
+        break;
+      }
+    }
+  }
+
+  return `https://loremflickr.com/600/450/${keyword}/all?lock=13`;
+}
+
+/* =========================================================
+   LOCAL PRODUCT GALLERIES
+   ========================================================= */
+
+/**
+ * Local folders:
+ *
+ * /public/images/lots/
+ *   ancient-coins/
+ *   omega-watch/
+ *   nes-console/
+ *   nike-shoes/
+ *   canon-camera/
+ *   airpods/
+ *   baseball-glove/
+ *   rayban-sunglasses/
+ *   auction-hero/        (used directly by HERO_BACKGROUND_IMAGE, not via gallery lookup)
+ *
+ * All 90 images (10 per folder x 9 folders) downloaded via download-images.js
+ * against the official Unsplash Search API — no more scraping the
+ * unofficial /napi/.../download redirect endpoint, which was silently
+ * returning non-image responses (0-byte / bot-blocked) for some products.
+ */
+
+const PRODUCT_KEYWORDS: Record<string, string[]> = {
+  "ancient-coins": [
+    "ancient-coins",
+    "ancient coin",
+    "ancient coins",
+    "coin",
+    "coins",
+    "numismatic",
+  ],
+
+  "omega-watch": [
+    "omega-watch",
+    "omega",
+    "speedmaster",
+    "seamaster",
+    "luxury watch",
+  ],
+
+  "nes-console": [
+    "nes",
+    "nintendo",
+    "console",
+    "gaming",
+    "retro gaming",
+  ],
+
+  "nike-shoes": [
+    "nike",
+    "shoes",
+    "sneaker",
+    "air jordan",
+    "dunk",
+  ],
+
+  "canon-camera": [
+    "canon",
+    "camera",
+    "lens",
+    "photography",
+    "film camera",
+  ],
+
+  airpods: [
+    "airpods",
+    "air pods",
+    "earbuds",
+  ],
+
+  "baseball-glove": [
+    "baseball glove",
+    "baseball",
+    "glove",
+    "rawlings",
+  ],
+
+  "rayban-sunglasses": [
+    "ray-ban",
+    "rayban",
+    "ray ban",
+    "sunglasses",
+  ],
+};
+
+/**
+ * Find local folder based on auction title.
+ */
+function findLocalProductFolder(title?: string | null): string | null {
+  const normalizedTitle = normalize(title);
+
+  if (!normalizedTitle) {
+    return null;
+  }
+
+  /*
+   * Check longer/more specific keywords first.
+   * This prevents "camera" from winning over "canon camera".
+   */
+  const entries = Object.entries(PRODUCT_KEYWORDS)
+    .flatMap(([folder, keywords]) =>
+      keywords.map((keyword) => ({
+        folder,
+        keyword: normalize(keyword),
+      }))
+    )
+    .sort((a, b) => b.keyword.length - a.keyword.length);
+
+  for (const entry of entries) {
+    if (normalizedTitle.includes(entry.keyword)) {
+      return entry.folder;
+    }
+  }
+
+  return null;
+}
+
+/* =========================================================
+   GALLERY
+   ========================================================= */
+
+/**
+ * Get gallery images for an auction.
+ *
+ * Priority:
+ *
+ * 1. Local product images for known products
+ * 2. Category-specific loremflickr images
+ * 3. Generic loremflickr images
  */
 export function getGalleryImages(
   title?: string,
   categoryName?: string,
-  limit: number = 5
+  limit: number = 5,
+  auctionId?: string
 ): string[] {
-  let folderId: string | null = null;
+  /*
+   * Protect against invalid limit values.
+   */
+  const safeLimit = Math.max(1, Math.min(Math.floor(limit), 20));
 
-  // First, try exact match on title
-  if (title) {
-    const titleKey = title.toLowerCase();
-    for (const [key, folder] of Object.entries(CATEGORY_TO_FOLDER_ID)) {
-      if (titleKey.includes(key)) {
-        folderId = folder;
-        break;
-      }
+  /* ---------------------------------------------
+     1. LOCAL PRODUCT GALLERY
+     --------------------------------------------- */
+
+  const folderId = findLocalProductFolder(title);
+
+  if (folderId) {
+    const localImages: string[] = [];
+
+    /*
+     * We have at least 5 local images per product
+     * (10 for the 9 folders downloaded via download-images.js).
+     */
+    const imageCount = Math.min(safeLimit, 5);
+
+    for (let i = 1; i <= imageCount; i++) {
+      localImages.push(`/images/lots/${folderId}/${i}.jpg`);
     }
+
+    return localImages;
   }
 
-  // If no match from title, try category
-  if (!folderId && categoryName) {
-    const categoryKey = categoryName.toLowerCase();
-    for (const [key, folder] of Object.entries(CATEGORY_TO_FOLDER_ID)) {
-      if (categoryKey.includes(key) || key.includes(categoryKey)) {
-        folderId = folder;
-        break;
-      }
-    }
+  /* ---------------------------------------------
+     2. CATEGORY GALLERY
+     --------------------------------------------- */
+
+  const categoryImages = findCategoryImages(categoryName);
+
+  const pool = categoryImages ?? GENERAL_FALLBACK_IMAGES;
+
+  const seed = auctionId ?? title ?? categoryName ?? "auction";
+
+  const startIndex = simpleHash(seed) % pool.length;
+
+  const gallery: string[] = [];
+
+  for (let i = 0; i < Math.min(safeLimit, pool.length); i++) {
+    gallery.push(pool[(startIndex + i) % pool.length]);
   }
 
-  // Default fallback to ancient-coins (always exists)
-  if (!folderId) {
-    folderId = "ancient-coins";
-  }
-
-  // Build array of local image paths (5 per lot)
-  const images: string[] = [];
-  for (let i = 1; i <= Math.min(limit, 5); i++) {
-    images.push(`/images/lots/${folderId}/${i}.jpg`);
-  }
-
-  return images;
+  return gallery;
 }
 
+/* =========================================================
+   PRIMARY IMAGE
+   ========================================================= */
+
 /**
- * Get primary image URL for an auction
- * Prefers local gallery first image, then imageUrl, then loremflickr fallback
- * 
- * @param auction Auction object with title, imageUrl and optional images array
- * @param size Optional size hint (unused, for future optimization)
- * @returns Single image URL to display as primary
+ * Get primary image for an auction.
+ *
+ * Priority:
+ *
+ * 1. images[0]
+ * 2. imageUrl
+ * 3. local/category gallery
+ * 4. placeholder
  */
 export function getPrimaryImage(
   auction: {
+    id?: string;
     title?: string;
     imageUrl?: string | null;
-    images?: string[];
-    categoryName?: string;
+    images?: string[] | null;
+    categoryName?: string | null;
   },
-  size?: "card" | "detail"
+  _size?: "card" | "detail"
 ): string {
-  // 1. If images array exists and has items, use first image
-  if (auction.images && auction.images.length > 0) {
-    return auction.images[0];
+  /* ---------------------------------------------
+     1. Existing images array
+     --------------------------------------------- */
+
+  if (Array.isArray(auction.images) && auction.images.length > 0) {
+    const firstImage = auction.images.find(
+      (image) => typeof image === "string" && image.trim() !== ""
+    );
+
+    if (firstImage) {
+      return firstImage.trim();
+    }
   }
 
-  // 2. If imageUrl provided, use it
-  if (auction.imageUrl && auction.imageUrl.trim() !== "") {
-    return auction.imageUrl;
+  /* ---------------------------------------------
+     2. Backend imageUrl
+     --------------------------------------------- */
+
+  if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
+    return auction.imageUrl.trim();
   }
 
-  // 3. Try to get first local gallery image
-  const gallery = getGalleryImages(auction.title, auction.categoryName, 1);
+  /* ---------------------------------------------
+     3. Gallery fallback
+     --------------------------------------------- */
+
+  const gallery = getGalleryImages(
+    auction.title,
+    auction.categoryName ?? undefined,
+    1,
+    auction.id
+  );
+
   if (gallery.length > 0) {
     return gallery[0];
   }
 
-  // 4. Fall back to generic placeholder
-  return getPlaceholderImage(auction.categoryName || "vintage");
+  /* ---------------------------------------------
+     4. Final placeholder
+     --------------------------------------------- */
+
+  return getPlaceholderImage(auction.categoryName);
 }
