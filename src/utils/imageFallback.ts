@@ -6,7 +6,7 @@
  * Priority:
  * 1. Existing auction image
  * 2. Local product gallery for known products
- * 3. Category-based loremflickr images
+ * 3. Category-based local images
  * 4. Generic fallback image
  */
 
@@ -14,33 +14,23 @@
    CATEGORY IMAGES
    ========================================================= */
 
-const createLoremFlickrImages = (
-  keyword: string,
-  count: number = 12,
-  width: number = 600,
-  height: number = 450
-): string[] => {
-  return Array.from({ length: count }, (_, index) => {
-    const lock = index + 1;
-    return `https://loremflickr.com/${width}/${height}/${keyword}/all?lock=${lock}`;
-  });
-};
+const localCategoryImages = (folderId: string, count: number = 10): string[] =>
+  Array.from({ length: count }, (_, index) => `/images/lots/${folderId}/${index + 1}.jpg`);
 
 export const CATEGORY_IMAGES: Record<string, string[]> = {
-  art: createLoremFlickrImages("painting"),
-  collectibles: createLoremFlickrImages("antique"),
-  electronics: createLoremFlickrImages("electronics"),
-  fashion: createLoremFlickrImages("fashion"),
-  "home & garden": createLoremFlickrImages("furniture"),
-  sports: createLoremFlickrImages("sports"),
+  art: localCategoryImages("category-art"),
+  collectibles: localCategoryImages("category-collectibles"),
+  electronics: localCategoryImages("category-electronics"),
+  fashion: localCategoryImages("category-fashion"),
+  "home & garden": localCategoryImages("category-home-garden"),
+  sports: localCategoryImages("category-sports"),
 };
 
 /* =========================================================
    GENERAL FALLBACK
    ========================================================= */
 
-export const GENERAL_FALLBACK_IMAGES: string[] =
-  createLoremFlickrImages("vintage", 6);
+export const GENERAL_FALLBACK_IMAGES: string[] = localCategoryImages("category-collectibles");
 
 /* =========================================================
    CATEGORY THUMBNAILS
@@ -59,23 +49,12 @@ export const CATEGORY_THUMBNAILS: Record<string, string> = {
    HERO IMAGE
    ========================================================= */
 
-// Now using a real, locally-downloaded photo (via download-images.js,
-// category "auction-hero") instead of an external CDN — images.unsplash.com
-// was failing to load in the browser for this project, so this removes
-// that dependency entirely for the hero banner.
 export const HERO_BACKGROUND_IMAGE = "/images/lots/auction-hero/1.jpg";
 
 /* =========================================================
    HELPERS
    ========================================================= */
 
-/**
- * Normalize text for reliable comparisons.
- *
- * Examples:
- * "Home & Garden" -> "home garden"
- * "  Electronics  " -> "electronics"
- */
 function normalize(value?: string | null): string {
   return (value ?? "")
     .trim()
@@ -85,11 +64,6 @@ function normalize(value?: string | null): string {
     .replace(/\s+/g, " ");
 }
 
-/**
- * Deterministic hash.
- *
- * Same string always produces the same number.
- */
 function simpleHash(value: string): number {
   let hash = 0;
 
@@ -101,9 +75,6 @@ function simpleHash(value: string): number {
   return Math.abs(hash);
 }
 
-/**
- * Safely get an image from an array.
- */
 function getDeterministicImage(images: string[], seed: string): string {
   if (images.length === 0) {
     return GENERAL_FALLBACK_IMAGES[0];
@@ -113,12 +84,6 @@ function getDeterministicImage(images: string[], seed: string): string {
   return images[index];
 }
 
-/**
- * Find category images using normalized exact/partial matching.
- *
- * IMPORTANT:
- * Empty category names never match anything.
- */
 function findCategoryImages(categoryName?: string | null): string[] | null {
   const category = normalize(categoryName);
 
@@ -145,14 +110,6 @@ function findCategoryImages(categoryName?: string | null): string[] | null {
    AUCTION IMAGE
    ========================================================= */
 
-/**
- * Get the best available image for an auction.
- *
- * Priority:
- * 1. auction.imageUrl
- * 2. category-specific fallback
- * 3. general fallback
- */
 export function getAuctionImage(
   auction: {
     id?: string;
@@ -161,12 +118,10 @@ export function getAuctionImage(
   },
   _size?: "card" | "detail"
 ): string {
-  // 1. Real image from backend
   if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
     return auction.imageUrl.trim();
   }
 
-  // 2. Category-specific fallback
   const categoryImages = findCategoryImages(auction.categoryName);
 
   if (categoryImages) {
@@ -176,7 +131,6 @@ export function getAuctionImage(
     );
   }
 
-  // 3. Generic fallback
   return getDeterministicImage(GENERAL_FALLBACK_IMAGES, auction.id ?? "auction");
 }
 
@@ -184,9 +138,6 @@ export function getAuctionImage(
    CATEGORY IMAGE
    ========================================================= */
 
-/**
- * Get category preview image.
- */
 export function getCategoryImage(categoryName?: string | null): string {
   const categoryImages = findCategoryImages(categoryName);
 
@@ -201,9 +152,6 @@ export function getCategoryImage(categoryName?: string | null): string {
    CATEGORY THUMBNAIL
    ========================================================= */
 
-/**
- * Get thumbnail for Popular Collections.
- */
 export function getCategoryThumbnail(categoryName?: string | null): string {
   const category = normalize(categoryName);
 
@@ -230,25 +178,22 @@ export function getCategoryThumbnail(categoryName?: string | null): string {
    PLACEHOLDER
    ========================================================= */
 
-const CATEGORY_KEYWORDS: Record<string, string> = {
-  art: "painting",
-  collectibles: "antique",
-  electronics: "electronics",
-  fashion: "fashion",
-  "home & garden": "furniture",
-  sports: "sports",
+const CATEGORY_FOLDER_MAP: Record<string, string> = {
+  art: "category-art",
+  collectibles: "category-collectibles",
+  electronics: "category-electronics",
+  fashion: "category-fashion",
+  "home & garden": "category-home-garden",
+  sports: "category-sports",
 };
 
-/**
- * Get placeholder image for a failed image.
- */
 export function getPlaceholderImage(categoryName?: string | null): string {
   const category = normalize(categoryName);
 
-  let keyword = "vintage";
+  let folder = "category-collectibles";
 
   if (category) {
-    for (const [key, value] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const [key, value] of Object.entries(CATEGORY_FOLDER_MAP)) {
       const normalizedKey = normalize(key);
 
       if (
@@ -256,13 +201,13 @@ export function getPlaceholderImage(categoryName?: string | null): string {
         category.includes(normalizedKey) ||
         normalizedKey.includes(category)
       ) {
-        keyword = value;
+        folder = value;
         break;
       }
     }
   }
 
-  return `https://loremflickr.com/600/450/${keyword}/all?lock=13`;
+  return `/images/lots/${folder}/10.jpg`;
 }
 
 /* =========================================================
@@ -275,18 +220,27 @@ export function getPlaceholderImage(categoryName?: string | null): string {
  * /public/images/lots/
  *   ancient-coins/
  *   omega-watch/
+ *   rolex-watch/
  *   nes-console/
  *   nike-shoes/
  *   canon-camera/
  *   airpods/
  *   baseball-glove/
  *   rayban-sunglasses/
- *   auction-hero/        (used directly by HERO_BACKGROUND_IMAGE, not via gallery lookup)
- *
- * All 90 images (10 per folder x 9 folders) downloaded via download-images.js
- * against the official Unsplash Search API — no more scraping the
- * unofficial /napi/.../download redirect endpoint, which was silently
- * returning non-image responses (0-byte / bot-blocked) for some products.
+ *   auction-hero/
+ *   category-art/
+ *   category-collectibles/
+ *   category-electronics/
+ *   category-fashion/
+ *   category-home-garden/
+ *   category-sports/
+ *   silk-scarf/
+ *   quilted-handbag/
+ *   wrought-iron-lamp/
+ *   antique-book/
+ *   wooden-desk/
+ *   van-gogh-painting/
+ *   monet-painting/
  */
 
 const PRODUCT_KEYWORDS: Record<string, string[]> = {
@@ -305,6 +259,11 @@ const PRODUCT_KEYWORDS: Record<string, string[]> = {
     "speedmaster",
     "seamaster",
     "luxury watch",
+  ],
+
+  "rolex-watch": [
+    "rolex",
+    "submariner",
   ],
 
   "nes-console": [
@@ -350,11 +309,51 @@ const PRODUCT_KEYWORDS: Record<string, string[]> = {
     "ray ban",
     "sunglasses",
   ],
+
+  "silk-scarf": [
+    "silk scarf",
+    "scarf",
+    "hermes",
+    "hermès",
+  ],
+
+  "quilted-handbag": [
+    "quilted handbag",
+    "handbag",
+    "chanel",
+    "quilted",
+  ],
+
+  "wrought-iron-lamp": [
+    "wrought iron",
+    "garden lamp",
+    "lamp",
+  ],
+
+  "antique-book": [
+    "harry potter",
+    "philosopher's stone",
+    "first edition",
+    "book",
+  ],
+
+  "wooden-desk": [
+    "wooden desk",
+    "desk",
+    "victorian",
+  ],
+
+  "van-gogh-painting": [
+    "van gogh",
+    "starry night",
+  ],
+
+  "monet-painting": [
+    "monet",
+    "water lilies",
+  ],
 };
 
-/**
- * Find local folder based on auction title.
- */
 function findLocalProductFolder(title?: string | null): string | null {
   const normalizedTitle = normalize(title);
 
@@ -362,10 +361,6 @@ function findLocalProductFolder(title?: string | null): string | null {
     return null;
   }
 
-  /*
-   * Check longer/more specific keywords first.
-   * This prevents "camera" from winning over "canon camera".
-   */
   const entries = Object.entries(PRODUCT_KEYWORDS)
     .flatMap(([folder, keywords]) =>
       keywords.map((keyword) => ({
@@ -388,39 +383,18 @@ function findLocalProductFolder(title?: string | null): string | null {
    GALLERY
    ========================================================= */
 
-/**
- * Get gallery images for an auction.
- *
- * Priority:
- *
- * 1. Local product images for known products
- * 2. Category-specific loremflickr images
- * 3. Generic loremflickr images
- */
 export function getGalleryImages(
   title?: string,
   categoryName?: string,
   limit: number = 5,
   auctionId?: string
 ): string[] {
-  /*
-   * Protect against invalid limit values.
-   */
   const safeLimit = Math.max(1, Math.min(Math.floor(limit), 20));
-
-  /* ---------------------------------------------
-     1. LOCAL PRODUCT GALLERY
-     --------------------------------------------- */
 
   const folderId = findLocalProductFolder(title);
 
   if (folderId) {
     const localImages: string[] = [];
-
-    /*
-     * We have at least 5 local images per product
-     * (10 for the 9 folders downloaded via download-images.js).
-     */
     const imageCount = Math.min(safeLimit, 5);
 
     for (let i = 1; i <= imageCount; i++) {
@@ -429,10 +403,6 @@ export function getGalleryImages(
 
     return localImages;
   }
-
-  /* ---------------------------------------------
-     2. CATEGORY GALLERY
-     --------------------------------------------- */
 
   const categoryImages = findCategoryImages(categoryName);
 
@@ -455,16 +425,6 @@ export function getGalleryImages(
    PRIMARY IMAGE
    ========================================================= */
 
-/**
- * Get primary image for an auction.
- *
- * Priority:
- *
- * 1. images[0]
- * 2. imageUrl
- * 3. local/category gallery
- * 4. placeholder
- */
 export function getPrimaryImage(
   auction: {
     id?: string;
@@ -475,10 +435,6 @@ export function getPrimaryImage(
   },
   _size?: "card" | "detail"
 ): string {
-  /* ---------------------------------------------
-     1. Existing images array
-     --------------------------------------------- */
-
   if (Array.isArray(auction.images) && auction.images.length > 0) {
     const firstImage = auction.images.find(
       (image) => typeof image === "string" && image.trim() !== ""
@@ -489,17 +445,9 @@ export function getPrimaryImage(
     }
   }
 
-  /* ---------------------------------------------
-     2. Backend imageUrl
-     --------------------------------------------- */
-
   if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
     return auction.imageUrl.trim();
   }
-
-  /* ---------------------------------------------
-     3. Gallery fallback
-     --------------------------------------------- */
 
   const gallery = getGalleryImages(
     auction.title,
@@ -511,10 +459,6 @@ export function getPrimaryImage(
   if (gallery.length > 0) {
     return gallery[0];
   }
-
-  /* ---------------------------------------------
-     4. Final placeholder
-     --------------------------------------------- */
 
   return getPlaceholderImage(auction.categoryName);
 }

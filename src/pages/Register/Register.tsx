@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/context/I18nContext";
-import { InputField, SelectField } from "@/components/common/FormField";
+import { InputField } from "@/components/common/FormField";
 import Button from "@/components/common/Button";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import { extractErrorMessage, extractFieldErrors } from "@/api/axiosClient";
@@ -53,70 +53,79 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      {/* LEFT SIDE: VISUAL */}
-      <div className="auth-page__visual">
-        <div className="auth-page__visual-content">
-          <div className="auth-page__visual-icon">🚀</div>
-          <p className="auth-page__visual-text">
-            {t.auth.registerVisualText}
-          </p>
-        </div>
-      </div>
+      <div className="auth-card">
+        <div className="auth-card__icon">🚀</div>
+        <span className="auth-card__eyebrow">{t.auth.joinFloor}</span>
+        <h1>{t.auth.createAccount}</h1>
+        <p>{t.auth.createAccountDesc}</p>
 
-      {/* RIGHT SIDE: FORM */}
-      <div className="auth-page__form">
-        <div className="auth-card">
-          <span className="auth-card__eyebrow">{t.auth.joinFloor}</span>
-          <h1>{t.auth.createAccount}</h1>
-          <p>{t.auth.createAccountDesc}</p>
+        {error ? <ErrorBanner message={error} /> : null}
 
-          {error ? <ErrorBanner message={error} /> : null}
+        <form onSubmit={handleSubmit}>
+          <InputField
+            label={t.auth.username}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            minLength={2}
+            autoComplete="username"
+            error={fieldErrors.Username}
+          />
+          <InputField
+            label={t.auth.email}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            error={fieldErrors.Email}
+          />
+          <InputField
+            label={t.auth.password}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            hint={t.auth.passwordHint}
+            autoComplete="new-password"
+            error={fieldErrors.Password}
+          />
+          <div className="role-select">
+            <span className="field__label">{t.auth.role}</span>
+            <div className="role-select__options" role="radiogroup" aria-label={t.auth.role}>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={role === "Buyer"}
+                className={`role-select__card ${role === "Buyer" ? "role-select__card--active" : ""}`}
+                onClick={() => setRole("Buyer")}
+              >
+                <span className="role-select__icon">🛍️</span>
+                <span className="role-select__label">{t.auth.buyerOption}</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={role === "Seller"}
+                className={`role-select__card ${role === "Seller" ? "role-select__card--active" : ""}`}
+                onClick={() => setRole("Seller")}
+              >
+                <span className="role-select__icon">🏷️</span>
+                <span className="role-select__label">{t.auth.sellerOption}</span>
+              </button>
+            </div>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <InputField
-              label={t.auth.username}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              minLength={2}
-              autoComplete="username"
-              error={fieldErrors.Username}
-            />
-            <InputField
-              label={t.auth.email}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              error={fieldErrors.Email}
-            />
-            <InputField
-              label={t.auth.password}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              hint={t.auth.passwordHint}
-              autoComplete="new-password"
-              error={fieldErrors.Password}
-            />
-            <SelectField label={t.auth.role} value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
-              <option value="Buyer">{t.auth.buyerOption}</option>
-              <option value="Seller">{t.auth.sellerOption}</option>
-            </SelectField>
+          <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
+            {t.auth.register}
+          </Button>
+        </form>
 
-            <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
-              {t.auth.register}
-            </Button>
-          </form>
-
-          <p className="auth-card__switch">
-            {t.auth.alreadyRegistered}{" "}
-            <Link to="/login">{t.auth.login}</Link>
-          </p>
-        </div>
+        <p className="auth-card__switch">
+          {t.auth.alreadyRegistered}{" "}
+          <Link to="/login">{t.auth.login}</Link>
+        </p>
       </div>
     </div>
   );

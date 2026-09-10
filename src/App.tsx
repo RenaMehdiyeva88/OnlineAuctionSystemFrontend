@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { LiveNotificationsProvider } from "@/context/LiveNotificationsContext";
 import { I18nProvider } from "@/context/I18nContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import Layout from "@/components/layout/Layout";
@@ -25,6 +26,7 @@ export default function App() {
         <I18nProvider>
           <AuthProvider>
             <NotificationProvider>
+              <LiveNotificationsProvider>
               <Routes>
                 <Route element={<Layout />}>
               <Route index element={<Home />} />
@@ -48,6 +50,7 @@ export default function App() {
               <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
+              </LiveNotificationsProvider>
             </NotificationProvider>
           </AuthProvider>
         </I18nProvider>

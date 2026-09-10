@@ -32,6 +32,19 @@ const CATEGORIES = [
   { id: 'auction-hero', query: 'auction gavel' },
   { id: 'category-art', query: 'abstract oil painting canvas art' },
   { id: 'category-home-garden', query: 'cozy living room interior' },
+  { id: 'category-collectibles', query: 'antique collectibles vintage items' },
+  { id: 'category-fashion', query: 'vintage fashion clothing accessories' },
+  { id: 'category-electronics', query: 'modern electronics gadgets technology' },
+  { id: 'category-sports', query: 'sports equipment gear vintage' },
+  { id: 'silk-scarf', query: 'silk scarf luxury fashion' },
+  { id: 'quilted-handbag', query: 'quilted leather handbag vintage' },
+  { id: 'wrought-iron-lamp', query: 'wrought iron vintage lamp' },
+  { id: 'antique-book', query: 'antique first edition book' },
+  { id: 'wooden-desk', query: 'antique wooden writing desk' },
+  { id: 'rolex-watch', query: 'rolex submariner vintage watch' },
+  { id: 'van-gogh-painting', query: 'van gogh starry night painting' },
+  { id: 'monet-painting', query: 'claude monet water lilies painting' },
+  { id: 'auth-visual', query: 'auction bidding paddle raised crowd' },
 ];
 
 const IMAGES_PER_CATEGORY = 10;

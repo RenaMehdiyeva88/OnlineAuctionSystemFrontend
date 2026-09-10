@@ -44,52 +44,40 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      {/* LEFT SIDE: VISUAL */}
-      <div className="auth-page__visual">
-        <div className="auth-page__visual-content">
-          <div className="auth-page__visual-icon">🔐</div>
-          <p className="auth-page__visual-text">
-            {t.auth.loginVisualText}
-          </p>
-        </div>
-      </div>
+      <div className="auth-card">
+        <div className="auth-card__icon">🔐</div>
+        <span className="auth-card__eyebrow">{t.auth.welcomeBack}</span>
+        <h1>{t.auth.login}</h1>
+        <p>{t.auth.loginDesc}</p>
 
-      {/* RIGHT SIDE: FORM */}
-      <div className="auth-page__form">
-        <div className="auth-card">
-          <span className="auth-card__eyebrow">{t.auth.welcomeBack}</span>
-          <h1>{t.auth.login}</h1>
-          <p>{t.auth.loginDesc}</p>
+        {error ? <ErrorBanner message={error} /> : null}
 
-          {error ? <ErrorBanner message={error} /> : null}
+        <form onSubmit={handleSubmit}>
+          <InputField
+            label={t.auth.email}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+          <InputField
+            label={t.auth.password}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+          <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
+            {t.auth.login}
+          </Button>
+        </form>
 
-          <form onSubmit={handleSubmit}>
-            <InputField
-              label={t.auth.email}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            <InputField
-              label={t.auth.password}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-            <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
-              {t.auth.login}
-            </Button>
-          </form>
-
-          <p className="auth-card__switch">
-            {t.auth.newToAuctionhouse}{" "}
-            <Link to="/register">{t.auth.register}</Link>
-          </p>
-        </div>
+        <p className="auth-card__switch">
+          {t.auth.newToAuctionhouse}{" "}
+          <Link to="/register">{t.auth.register}</Link>
+        </p>
       </div>
     </div>
   );

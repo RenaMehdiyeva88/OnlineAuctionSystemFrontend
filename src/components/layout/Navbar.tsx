@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/context/I18nContext";
+import { useLiveNotifications } from "@/hooks/useLiveNotifications";
 import Button from "@/components/common/Button";
 import LanguageThemeSwitcher from "@/components/common/LanguageThemeSwitcher";
 import "./Navbar.css";
@@ -9,10 +10,16 @@ export default function Navbar() {
   const { isAuthenticated, user, hasRole, logout } = useAuth();
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { unreadCount, markAllSeen } = useLiveNotifications();
 
   function handleLogout() {
     logout();
     navigate("/");
+  }
+
+  function handleNotificationsClick() {
+    markAllSeen();
+    navigate("/notifications");
   }
 
   return (
@@ -45,8 +52,11 @@ export default function Navbar() {
                   + New Auction
                 </Button>
               )}
-              <Button size="sm" variant="ghost" onClick={() => navigate("/notifications")}>
-                🔔 Notifications
+              <Button size="sm" variant="ghost" onClick={handleNotificationsClick} className="navbar__bell">
+                🔔 {t.common.notifications}
+                {unreadCount > 0 ? (
+                  <span className="navbar__bell-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+                ) : null}
               </Button>
               <NavLink to="/profile" className="navbar__user">
                 {user?.username}

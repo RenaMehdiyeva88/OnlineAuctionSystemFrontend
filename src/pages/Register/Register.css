@@ -1,45 +1,44 @@
 /* ========================================
    AUTH PAGES (Login & Register)
+   Single centered card, no split photo panel — decorative background
+   gradients instead, in the site's own dark green + gold palette.
    ======================================== */
 
 .auth-page {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   min-height: calc(100vh - var(--header-height));
-}
-
-.auth-page__visual {
-  background: linear-gradient(135deg, var(--color-surface-alt) 0%, var(--color-surface) 100%);
-  border-right: 1px solid var(--color-border-strong);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--space-2xl, 40px) var(--space-lg, 20px);
   position: relative;
   overflow: hidden;
+  background: var(--color-bg, #0f1b14);
 }
 
-.auth-page__visual::before {
+.auth-page::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(168, 153, 104, 0.1) 0%, transparent 70%);
+  top: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.12) 0%, transparent 70%);
   border-radius: 50%;
   animation: float 8s ease-in-out infinite;
+  pointer-events: none;
 }
 
-.auth-page__visual::after {
+.auth-page::after {
   content: '';
   position: absolute;
-  bottom: -30%;
-  right: -20%;
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(76, 154, 107, 0.08) 0%, transparent 70%);
+  bottom: -20%;
+  right: -10%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(76, 154, 107, 0.1) 0%, transparent 70%);
   border-radius: 50%;
   animation: float 10s ease-in-out infinite reverse;
+  pointer-events: none;
 }
 
 @keyframes float {
@@ -47,100 +46,145 @@
   50% { transform: translateY(30px); }
 }
 
-.auth-page__visual-content {
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.auth-page__visual-icon {
-  font-size: 100px;
-  margin-bottom: var(--space-lg);
-  opacity: 0.4;
-}
-
-.auth-page__visual-text {
-  color: var(--color-text-muted);
-  max-width: 300px;
-  line-height: 1.6;
-}
-
-.auth-page__form {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3xl);
-  overflow-y: auto;
-}
-
 .auth-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface, #1c2e22);
+  border: 1px solid var(--color-border, #2c4433);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--space-2xl, 40px) var(--space-xl, 32px);
+  box-shadow: var(--shadow-elevated, 0 4px 12px rgba(0,0,0,0.3), 0 16px 40px rgba(0,0,0,0.35));
+  text-align: center;
+}
+
+.auth-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  font-size: 1.9rem;
+  margin: 0 auto var(--space-lg, 18px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.25) 0%, rgba(201, 162, 39, 0.06) 70%);
+  border: 1px solid rgba(201, 162, 39, 0.4);
 }
 
 .auth-card__eyebrow {
   display: block;
-  margin-bottom: var(--space-lg);
-  color: var(--color-accent);
+  margin-bottom: var(--space-md, 10px);
+  color: var(--color-accent, #c9a227);
   font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .auth-card h1 {
-  font-size: clamp(1.8rem, 4vw, 2.4rem);
-  margin-bottom: var(--space-md);
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  margin-bottom: var(--space-md, 10px);
   letter-spacing: -0.01em;
 }
 
 .auth-card > p {
-  margin-bottom: var(--space-2xl);
-  color: var(--color-text-muted);
+  margin-bottom: var(--space-2xl, 28px);
+  color: var(--color-text-muted, #a9bcac);
   line-height: 1.6;
+  font-size: 0.9rem;
 }
 
 .auth-card form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-2xl);
+  gap: var(--space-lg, 18px);
+  margin-bottom: var(--space-xl, 24px);
+  text-align: left;
 }
 
 .auth-card__submit {
   width: 100%;
-  margin-top: var(--space-md);
+  margin-top: var(--space-sm, 8px);
 }
 
 .auth-card__switch {
   text-align: center;
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-  margin-top: var(--space-2xl);
-  padding-top: var(--space-2xl);
-  border-top: 1px solid var(--color-border);
+  font-size: 0.88rem;
+  color: var(--color-text-muted, #a9bcac);
+  margin-top: var(--space-xl, 24px);
+  padding-top: var(--space-xl, 24px);
+  border-top: 1px solid var(--color-border, #2c4433);
 }
 
 .auth-card__switch a {
-  color: var(--color-accent);
+  color: var(--color-accent, #c9a227);
   font-weight: 600;
   text-decoration: none;
-  transition: color var(--duration-base) var(--ease-smooth);
 }
 
 .auth-card__switch a:hover {
-  color: var(--color-accent-bright);
+  color: var(--color-accent-bright, #e8c547);
 }
 
-/* Mobile: Stack vertically */
-@media (max-width: 1024px) {
-  .auth-page {
-    grid-template-columns: 1fr;
+@media (max-width: 480px) {
+  .auth-card {
+    padding: var(--space-xl, 24px) var(--space-lg, 20px);
   }
-  
-  .auth-page__visual {
-    display: none;
-  }
-  
-  .auth-page__form {
-    min-height: calc(100vh - var(--header-height));
-    padding: var(--space-2xl) var(--space-lg);
-  }
+}
+
+/* Visual Buyer/Seller role selector — two clickable cards instead of a
+   plain <select> dropdown, so the choice feels like a real decision. */
+.role-select {
+  margin-bottom: 4px;
+}
+
+.role-select__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm, 10px);
+  margin-top: 6px;
+}
+
+.role-select__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: var(--color-bg-elevated, #14231a);
+  border: 1px solid var(--color-border, #2c4433);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--color-text, #f2efe6);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.role-select__card:hover {
+  border-color: var(--color-border-strong, #3c5a46);
+  background: var(--color-surface-hover, #23392a);
+}
+
+.role-select__card:active {
+  transform: translateY(1px);
+}
+
+.role-select__card--active {
+  border-color: var(--color-accent, #c9a227);
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--color-accent-bright, #e8c547);
+}
+
+.role-select__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.role-select__label {
+  line-height: 1.3;
 }
