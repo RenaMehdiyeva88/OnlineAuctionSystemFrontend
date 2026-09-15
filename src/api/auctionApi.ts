@@ -6,13 +6,17 @@ import type {
   AuctionSearchParams,
   CreateAuctionRequest,
 } from "@/models/Auction";
+import type { PagedResult } from "@/models/Common";
 
 const auctionApi = {
-  // F8: category-based browsing and search with price range filter
+  // F8: category-based browsing and search with price range filter.
+  // Backend now returns PagedResult<AuctionListItemDto> (not a bare array) —
+  // matches bid history / notifications pagination shape, so callers can
+  // build real "load more" / page-count UI instead of guessing from array length.
   search: (params: AuctionSearchParams) =>
     axiosClient
-      .get<AuctionListItem[]>("/auctions", { params })
-      .then((res: AxiosResponse<AuctionListItem[]>) => res.data),
+      .get<PagedResult<AuctionListItem>>("/auctions", { params })
+      .then((res: AxiosResponse<PagedResult<AuctionListItem>>) => res.data),
 
   getById: (id: string) =>
     axiosClient.get<Auction>(`/auctions/${id}`).then((res: AxiosResponse<Auction>) => res.data),

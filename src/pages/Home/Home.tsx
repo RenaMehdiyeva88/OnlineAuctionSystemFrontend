@@ -25,8 +25,8 @@ export default function Home() {
   useEffect(() => {
     let isMounted = true;
 
-    Promise.all([
-      auctionApi.search({ page: 1, pageSize: 8 }).catch(() => []), // Return empty array on error
+        Promise.all([
+      auctionApi.search({ page: 1, pageSize: 8 }).then((r) => r.items).catch(() => []), // Return empty array on error
       categoryApi.getAll().catch(() => [] as Category[]),
     ])
       .then(([auctions, cats]) => {

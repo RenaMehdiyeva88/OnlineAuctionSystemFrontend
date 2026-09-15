@@ -76,17 +76,20 @@ export default function Auctions() {
       pageSize: effectivePageSize,
     };
 
-    auctionApi
+        auctionApi
       .search(apiParams)
-      .then((data) => {
+      .then((result) => {
         if (isMounted) {
           if (currentPage === 1) {
-            setAllAuctions(data);
+            setAllAuctions(result.items);
           } else {
-            setAllAuctions((prev) => [...prev, ...data]);
+            setAllAuctions((prev) => [...prev, ...result.items]);
           }
-          // Assume there are more if we got a full page of results
-          setHasMore(data.length === effectivePageSize);
+          // Backend now tells us directly whether there's another page,
+          // instead of us guessing from whether the last page happened to
+          // come back full (which breaks if totalCount is an exact multiple
+          // of pageSize).
+          setHasMore(result.hasNextPage);
         }
       })
       .catch((err) => {
