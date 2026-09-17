@@ -7,13 +7,10 @@ import { InputField, SelectField, TextareaField } from "@/components/common/Form
 import Button from "@/components/common/Button";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import { extractErrorMessage } from "@/api/axiosClient";
-import { validateRequired, validatePositivePrice, validateFutureDateTime, validateImageUrl } from "@/utils/validators";
+import { validateRequired, validatePositivePrice, validateFutureDateTime } from "@/utils/validators";
 import { useI18n } from "@/context/I18nContext";
 import "./CreateAuction.css";
 
-// F2: Sellers create an auction with title, description, image, starting price,
-// end time, and category. Route access is already restricted to Sellers via
-// <SellerRoute />.
 export default function CreateAuction() {
   const navigate = useNavigate();
   const { t } = useI18n();
@@ -21,6 +18,7 @@ export default function CreateAuction() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const [startingPrice, setStartingPrice] = useState("");
   const [endTime, setEndTime] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -31,13 +29,28 @@ export default function CreateAuction() {
     categoryApi.getAll().then(setCategories).catch(() => setCategories([]));
   }, []);
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setIsUploading(true);
+    try {
+      const url = await auctionApi.uploadImage(file);
+      const apiOrigin = new URL(import.meta.env.VITE_API_BASE_URL ?? "https://localhost:7201/api").origin;
+      setImageUrl(`${apiOrigin}${url}`);
+    } catch (err) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
     const validationError =
       validateRequired(title, t.pages.createAuctionValidationTitle) ??
       validateRequired(description, t.pages.createAuctionValidationDescription) ??
-      validateImageUrl(imageUrl) ??
       validatePositivePrice(startingPrice, t.pages.createAuctionValidationPrice) ??
       validateFutureDateTime(endTime, t.pages.createAuctionValidationEndTime) ??
       (categoryId ? null : t.pages.createAuctionValidationCategory);
@@ -66,7 +79,6 @@ export default function CreateAuction() {
     }
   }
 
-  // Minimum selectable end time is "now" so sellers can't schedule a closed auction.
   const minDateTime = new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 16);
 
   return (
@@ -96,14 +108,14 @@ export default function CreateAuction() {
           placeholder={t.pages.createAuctionDescPlaceholder}
         />
 
-        <InputField
-          label={t.pages.createAuctionImage}
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://…"
-          hint={t.pages.createAuctionImageHint}
-        />
+        <div className="field">
+          <label className="field__label">{t.pages.createAuctionImage}</label>
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} disabled={isUploading} />
+          {isUploading ? <p className="field__hint">Uploading…</p> : null}
+          {imageUrl ? (
+            <img src={imageUrl} alt="" style={{ maxWidth: 200, marginTop: 8, borderRadius: 8, display: "block" }} />
+          ) : null}
+        </div>
 
         <div className="create-auction__row">
           <InputField
@@ -134,7 +146,7 @@ export default function CreateAuction() {
           required
         />
 
-        <Button type="submit" size="lg" isLoading={isSubmitting}>
+        <Button type="submit" size="lg" isLoading={isSubmitting} disabled={isUploading}>
           {t.pages.createAuctionPublish}
         </Button>
       </form>

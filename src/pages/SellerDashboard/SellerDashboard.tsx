@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import userApi, { type SellerDashboard as SellerDashboardData } from "@/api/userApi";
+import auctionApi from "@/api/auctionApi";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
 import StatusBadge from "@/components/common/Badge";
@@ -19,6 +20,26 @@ export default function SellerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"active" | "completed">("active");
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  async function handleCancel(auctionId: string) {
+    setCancellingId(auctionId);
+    try {
+      await auctionApi.cancel(auctionId);
+      setDashboard((prev) =>
+        prev
+          ? {
+              ...prev,
+              activeAuctions: prev.activeAuctions.filter((a) => a.id !== auctionId),
+            }
+          : prev
+      );
+    } catch (err) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -108,6 +129,16 @@ export default function SellerDashboard() {
                       {t.pages.sellerDashboardView}
                     </Button>
                   </Link>
+                  {tab === "active" && auction.totalBids === 0 ? (
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      isLoading={cancellingId === auction.id}
+                      onClick={() => handleCancel(auction.id)}
+                    >
+                      Cancel
+                    </Button>
+                  ) : null}
                 </td>
               </tr>
             ))}
