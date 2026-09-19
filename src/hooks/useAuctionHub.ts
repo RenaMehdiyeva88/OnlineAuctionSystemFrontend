@@ -7,16 +7,9 @@ interface AuctionHubEvents {
   onNewBid?: (payload: { auctionId: string; newBidAmount: number; bidderName: string }) => void;
   onAuctionWon?: (payload: { auctionId: string; winningAmount: number }) => void;
   onAuctionClosed?: (payload: { auctionId: string }) => void;
+  onBidPlaced?: (payload: { auctionId: string; newAmount: number; bidderName: string }) => void;
 }
 
-// F3/F4/F5: subscribes to the real backend SignalR hub (NotificationHub,
-// mapped at /hubs/notifications). No fake timers or simulated data.
-//
-// Events:
-// - OutBid: Sent to losing bidders when outbid
-// - NewBid: Sent to seller when new bid is placed on their auction
-// - AuctionWon: Sent to winner when auction closes
-// - AuctionClosed: Sent to seller when auction closes
 export function useAuctionHub(auctionId: string | undefined, events: AuctionHubEvents) {
   const [isConnected, setIsConnected] = useState(false);
   const eventsRef = useRef(events);
@@ -44,17 +37,29 @@ export function useAuctionHub(auctionId: string | undefined, events: AuctionHubE
     connection.on("AuctionClosed", (payload: { auctionId: string }) =>
       eventsRef.current.onAuctionClosed?.(payload)
     );
+    connection.on(
+      "BidPlaced",
+      (payload: { auctionId: string; newAmount: number; bidderName: string }) =>
+        eventsRef.current.onBidPlaced?.(payload)
+    );
 
     connection
       .start()
-      .then(() => setIsConnected(true))
+      .then(() => {
+        setIsConnected(true);
+        return connection.invoke("JoinAuctionGroup", auctionId);
+      })
       .catch((err) => console.error("SignalR connection failed:", err));
 
-    connection.onreconnected(() => setIsConnected(true));
+    connection.onreconnected(() => {
+      setIsConnected(true);
+      connection.invoke("JoinAuctionGroup", auctionId).catch((err) => console.error("Rejoin failed:", err));
+    });
     connection.onreconnecting(() => setIsConnected(false));
     connection.onclose(() => setIsConnected(false));
 
     return () => {
+      connection.invoke("LeaveAuctionGroup", auctionId).catch(() => {});
       connection.stop();
       setIsConnected(false);
     };

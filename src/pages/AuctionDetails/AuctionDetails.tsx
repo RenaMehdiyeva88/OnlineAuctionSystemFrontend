@@ -81,7 +81,7 @@ export default function AuctionDetails() {
   // specific user affected, not a live "NewBid" broadcast to every viewer
   // (see useAuctionHub for details) — so we refetch on outbid to bring this
   // page's price/history back in sync for the person who was just outbid.
-  useAuctionHub(id, {
+   useAuctionHub(id, {
     onOutbid: (payload) => {
       if (payload.auctionId === id) {
         pushToast("You've just been outbid! Place a higher bid to stay in the running.", "outbid");
@@ -98,6 +98,12 @@ export default function AuctionDetails() {
       if (payload.auctionId === id) {
         setHasEnded(true);
         loadAuction();
+      }
+    },
+    onBidPlaced: (payload) => {
+      if (payload.auctionId === id) {
+        setAuction((prev) => (prev ? { ...prev, currentHighestBid: payload.newAmount } : prev));
+        loadAuction().catch((err) => setError(extractErrorMessage(err)));
       }
     },
   });
