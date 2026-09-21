@@ -9,9 +9,9 @@ const bidApi = {
 
   // F7: paginated bid history for an auction, most recent first.
   // Backend now returns PagedResult<BidDto>, not a bare array.
-  getHistory: (auctionId: string, pageNumber = 1, pageSize = 20) =>
+    getHistory: (auctionId: string, page = 1, pageSize = 20) =>
     axiosClient
-      .get<PagedResult<Bid>>(`/auctions/${auctionId}/bids`, { params: { pageNumber, pageSize } })
+      .get<PagedResult<Bid>>(`/auctions/${auctionId}/bids`, { params: { page, pageSize } })
       .then((res) => res.data),
 };
 

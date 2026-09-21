@@ -7,9 +7,9 @@ import type { PagedResult } from "@/models/Common";
 const notificationApi = {
   // F3/F5: paginated notification history. Backend now returns
   // PagedResult<NotificationDto>, not a bare array.
-  getMine: (pageNumber = 1, pageSize = 20) =>
+    getMine: (page = 1, pageSize = 20) =>
     axiosClient
-      .get<PagedResult<AppNotification>>("/notifications", { params: { pageNumber, pageSize } })
+      .get<PagedResult<AppNotification>>("/notifications", { params: { page, pageSize } })
       .then((res) => res.data),
 
   // PATCH /api/notifications/{id}/read — marks a single notification read.

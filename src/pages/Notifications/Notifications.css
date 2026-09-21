@@ -35,8 +35,13 @@
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
   border-radius: var(--radius-md);
   transition: all var(--transition-normal);
+}
+
+.notification-card--read {
+  border-left-color: var(--color-border);
 }
 
 .notification-card:hover {
@@ -70,6 +75,20 @@
   margin-left: var(--spacing-md);
 }
 
+.notification-card--read {
+  opacity: 0.6;
+}
+
+.notification-card--read .notification-message {
+  font-weight: 400;
+}
+
+.notifications-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 @media (max-width: 640px) {
   .notifications-page {
     padding: var(--spacing-md) 0;
@@ -93,15 +112,4 @@
   .notification-actions button {
     width: 100%;
   }
-  .notification-card--read {
-  opacity: 0.6;
-}
-.notification-card--read .notification-message {
-  font-weight: 400;
-}
-.notifications-load-more {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
 }
