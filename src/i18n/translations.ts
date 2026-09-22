@@ -104,6 +104,13 @@ export interface Translations {
     notificationsViewLot: string;
     notificationsLoadMore: string;
     notificationsLoading: string;
+    notificationsToday: string;
+    notificationsYesterday: string;
+    notificationsFilterAll: string;
+    notificationsFilterUnread: string;
+    notificationsMarkAllRead: string;
+    notificationsEmptyUnreadTitle: string;
+    notificationsEmptyUnreadDesc: string;
     createAuctionEyebrow: string;
     createAuctionTitle: string;
     createAuctionSubtitle: string;
@@ -249,6 +256,13 @@ export const en: Translations = {
     notificationsViewLot: 'View Lot',
     notificationsLoadMore: 'Load more',
     notificationsLoading: 'Loading notifications…',
+    notificationsToday: 'Today',
+    notificationsYesterday: 'Yesterday',
+    notificationsFilterAll: 'All',
+    notificationsFilterUnread: 'Unread',
+    notificationsMarkAllRead: 'Mark all as read',
+    notificationsEmptyUnreadTitle: "You're all caught up",
+    notificationsEmptyUnreadDesc: 'No unread notifications right now.',
     createAuctionEyebrow: 'New listing',
     createAuctionTitle: 'List a new lot',
     createAuctionSubtitle: 'Give bidders what they need to trust the listing — clear photos, an honest description, and a fair starting price.',
@@ -394,6 +408,13 @@ export const ru: Translations = {
     notificationsViewLot: 'Посмотреть лот',
     notificationsLoadMore: 'Загрузить еще',
     notificationsLoading: 'Загрузка уведомлений…',
+    notificationsToday: 'Сегодня',
+    notificationsYesterday: 'Вчера',
+    notificationsFilterAll: 'Все',
+    notificationsFilterUnread: 'Непрочитанные',
+    notificationsMarkAllRead: 'Отметить все как прочитанные',
+    notificationsEmptyUnreadTitle: 'Все прочитано',
+    notificationsEmptyUnreadDesc: 'Сейчас нет непрочитанных уведомлений.',
     createAuctionEyebrow: 'Новое объявление',
     createAuctionTitle: 'Разместить новый лот',
     createAuctionSubtitle: 'Дайте покупателям то, что убедит их доверять объявлению — чёткие фото, честное описание и справедливую начальную цену.',
@@ -539,6 +560,13 @@ export const az: Translations = {
     notificationsViewLot: 'Lotu göstər',
     notificationsLoadMore: 'Daha çox yüklə',
     notificationsLoading: 'Bildirişlər yüklənir…',
+    notificationsToday: 'Bu gün',
+    notificationsYesterday: 'Dünən',
+    notificationsFilterAll: 'Hamısı',
+    notificationsFilterUnread: 'Oxunmamış',
+    notificationsMarkAllRead: 'Hamısını oxunmuş kimi qeyd et',
+    notificationsEmptyUnreadTitle: 'Hər şey oxunub',
+    notificationsEmptyUnreadDesc: 'Hazırda oxunmamış bildiriş yoxdur.',
     createAuctionEyebrow: 'Yeni elan',
     createAuctionTitle: 'Yeni lot yerləşdir',
     createAuctionSubtitle: 'Alıcılara etibar etmək üçün lazım olanı verin — aydın fotolar, dürüst təsvir və ədalətli başlanğıc qiyməti.',

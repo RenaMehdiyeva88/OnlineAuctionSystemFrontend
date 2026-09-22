@@ -108,6 +108,38 @@
   text-decoration: none;
 }
 
+/* ---- Notifications bell + unread badge ----
+   The badge is now a SIBLING of <Button>, not a child inside it — Button
+   wraps its children in its own <span>, and Button.css rules for that
+   span (sizing for label centering) were stretching the badge to fill
+   the whole button. Positioning it on this outer wrapper instead keeps
+   it completely outside Button's internal markup. */
+.navbar__bell-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar__bell-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: auto;
+  min-width: 16px;
+  height: 16px;
+  background: var(--color-accent-bright, #e8c547);
+  color: #1a1a1a;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  pointer-events: none;
+}
+
 /* ---- Responsive Design ---- */
 
 /* Tablet: Hide center links, show hamburger menu */
@@ -157,26 +189,4 @@
   .navbar__actions {
     gap: var(--space-sm);
   }
-  
-.navbar__bell {
-  position: relative;
-}
-
-.navbar__bell-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--color-accent-bright, #e8c547);
-  color: #1a1a1a;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 3px;
-}
 }

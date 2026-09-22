@@ -52,12 +52,25 @@ export default function Navbar() {
                   + New Auction
                 </Button>
               )}
-              <Button size="sm" variant="ghost" onClick={handleNotificationsClick} className="navbar__bell">
-                🔔 {t.common.notifications}
+
+              {/*
+                The badge used to live INSIDE Button's children, which
+                Button.tsx wraps in its own <span>. Button.css styles that
+                span (width/height for centering label text), and those
+                rules were stretching our badge span to fill the whole
+                button. Moving the badge to a sibling of <Button>, inside a
+                small positioning wrapper, keeps it completely outside
+                Button's internal markup so Button.css can't touch it.
+              */}
+              <span className="navbar__bell-wrap">
+                <Button size="sm" variant="ghost" onClick={handleNotificationsClick}>
+                  🔔 {t.common.notifications}
+                </Button>
                 {unreadCount > 0 ? (
                   <span className="navbar__bell-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
                 ) : null}
-              </Button>
+              </span>
+
               <NavLink to="/profile" className="navbar__user">
                 {user?.username}
               </NavLink>

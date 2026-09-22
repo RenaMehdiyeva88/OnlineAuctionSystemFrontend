@@ -20,37 +20,161 @@
   margin: 0 auto;
 }
 
-.notifications-list {
+/* ---------- toolbar: filter chips + mark all ---------- */
+
+.notifications-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-lg);
+  position: relative;
+}
+
+.notifications-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.filter-chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.filter-chip--active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg, #fff);
+}
+
+.filter-chip__count {
+  font-size: 0.6875rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.25);
+}
+
+.filter-chip--active .filter-chip__count {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.mark-all-link {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-normal);
+}
+
+.mark-all-link:hover {
+  color: var(--color-accent);
+}
+
+/* ---------- day groups ---------- */
+
+.notifications-groups {
   max-width: 800px;
   margin: 0 auto;
 }
 
-.notification-card {
+.notifications-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.notifications-group__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  margin: 0 2px var(--spacing-sm);
+}
+
+.notifications-list {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ---------- notification card ---------- */
+
+.notification-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-accent);
   border-radius: var(--radius-md);
   transition: all var(--transition-normal);
-}
-
-.notification-card--read {
-  border-left-color: var(--color-border);
+  overflow: hidden;
 }
 
 .notification-card:hover {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.notification-card--unread {
+  border-color: var(--color-accent);
+}
+
+.notification-card--unread::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-accent);
+}
+
+.notification-card--read {
+  opacity: 0.6;
+}
+
+.notification-card--read:hover {
+  opacity: 1;
+}
+
+.notification-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
 }
 
 .notification-content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
@@ -63,8 +187,16 @@
   line-height: 1.5;
 }
 
+.notification-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
 .notification-time {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   font-family: var(--font-mono);
 }
@@ -72,15 +204,6 @@
 .notification-actions {
   display: flex;
   gap: var(--spacing-sm);
-  margin-left: var(--spacing-md);
-}
-
-.notification-card--read {
-  opacity: 0.6;
-}
-
-.notification-card--read .notification-message {
-  font-weight: 400;
 }
 
 .notifications-load-more {
@@ -98,15 +221,31 @@
     font-size: 1.5rem;
   }
 
+  .notifications-toolbar {
+    justify-content: flex-start;
+  }
+
+  .mark-all-link {
+    position: static;
+    width: 100%;
+    text-align: left;
+    margin-top: var(--spacing-xs);
+  }
+
   .notification-card {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-sm);
   }
 
+  .notification-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
   .notification-actions {
     width: 100%;
-    margin-left: 0;
   }
 
   .notification-actions button {
