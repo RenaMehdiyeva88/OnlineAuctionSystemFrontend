@@ -15,6 +15,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: Location })?.from?.pathname ?? "/";
+  const justReset = (location.state as { justReset?: boolean })?.justReset ?? false;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,6 +51,12 @@ export default function Login() {
         <h1>{t.auth.login}</h1>
         <p>{t.auth.loginDesc}</p>
 
+        {justReset ? (
+          <p className="auth-card__success">
+            Your password was reset. Log in with your new password.
+          </p>
+        ) : null}
+
         {error ? <ErrorBanner message={error} /> : null}
 
         <form onSubmit={handleSubmit}>
@@ -69,6 +76,11 @@ export default function Login() {
             required
             autoComplete="current-password"
           />
+
+          <div className="auth-card__forgot">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
+
           <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
             {t.auth.login}
           </Button>
