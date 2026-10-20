@@ -16,3 +16,13 @@
 @media (max-width: 560px) {
   .create-auction__row { grid-template-columns: 1fr; }
 }
+.create-auction__ai {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: -8px 0 20px;
+}
+.create-auction__ai .field__hint {
+  margin: 0;
+}

@@ -1,7 +1,8 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import auctionApi from "@/api/auctionApi";
 import categoryApi from "@/api/categoryApi";
+import aiApi from "@/api/aiApi";
 import type { Category } from "@/models/Category";
 import { InputField, SelectField, TextareaField } from "@/components/common/FormField";
 import Button from "@/components/common/Button";
@@ -24,12 +25,14 @@ export default function CreateAuction() {
   const [categoryId, setCategoryId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [aiNote, setAiNote] = useState<string | null>(null);
 
   useEffect(() => {
     categoryApi.getAll().then(setCategories).catch(() => setCategories([]));
   }, []);
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
@@ -42,6 +45,36 @@ export default function CreateAuction() {
       setError(extractErrorMessage(err));
     } finally {
       setIsUploading(false);
+    }
+  }
+
+  async function handleSuggestWithAi() {
+    const sellerInput = `${title} ${description}`.trim();
+    if (!sellerInput) {
+      setError(t.pages.createAuctionAiHint);
+      return;
+    }
+
+    setError(null);
+    setAiNote(null);
+    setIsSuggesting(true);
+    try {
+      const suggestion = await aiApi.suggestListing(sellerInput);
+
+      // Every suggestion is pre-filled into the normal, still-editable form
+      // fields — nothing is saved until the seller reviews and submits the
+      // form themselves. Each field only overwrites if the AI actually had
+      // a suggestion for it (fields can come back null).
+      if (suggestion.suggestedTitle) setTitle(suggestion.suggestedTitle);
+      if (suggestion.suggestedCategoryId) setCategoryId(suggestion.suggestedCategoryId);
+      if (suggestion.suggestedStartingPrice != null) {
+        setStartingPrice(String(suggestion.suggestedStartingPrice));
+      }
+      setAiNote(suggestion.note);
+    } catch (err) {
+      setError(extractErrorMessage(err) || t.pages.createAuctionAiError);
+    } finally {
+      setIsSuggesting(false);
     }
   }
 
@@ -107,6 +140,19 @@ export default function CreateAuction() {
           maxLength={4000}
           placeholder={t.pages.createAuctionDescPlaceholder}
         />
+
+        <div className="create-auction__ai">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            isLoading={isSuggesting}
+            onClick={handleSuggestWithAi}
+          >
+            {t.pages.createAuctionAiSuggest}
+          </Button>
+          <p className="field__hint">{aiNote ?? t.pages.createAuctionAiHint}</p>
+        </div>
 
         <div className="field">
           <label className="field__label">{t.pages.createAuctionImage}</label>

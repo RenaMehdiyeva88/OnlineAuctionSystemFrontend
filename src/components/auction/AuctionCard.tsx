@@ -20,7 +20,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
 
   const imageSrc = imageError 
     ? getPlaceholderImage(auction.categoryName)
-    : getPrimaryImage(auction, "card");
+    : getPrimaryImage(auction);
 
   return (
     <Link to={`/auctions/${auction.id}`} className="auction-card">

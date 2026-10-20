@@ -26,7 +26,7 @@
         </div>
         
         <div className="auction-details__info">
-          {/* Title, price, bid form, etc. */}
+          Title, price, bid form, etc.
         </div>
       </div>
     );
@@ -41,7 +41,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Auction } from "@/models/Auction";
 import { auctionApi } from "@/api/auctionApi";
-import { getPrimaryImage, getGalleryImages } from "@/utils/imageFallback";
+import { getGalleryImages } from "@/utils/imageFallback";
 import ImageGallery from "@/components/auction/ImageGallery";
 import BidForm from "@/components/bid/BidForm";
 import "./AuctionDetails.css";
@@ -57,7 +57,7 @@ export default function AuctionDetails() {
       try {
         const data = await auctionApi.getById(id!);
         setAuction(data);
-      } catch (err) {
+      } catch {
         setError("Failed to load auction details");
       } finally {
         setLoading(false);

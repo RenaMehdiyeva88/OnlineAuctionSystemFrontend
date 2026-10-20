@@ -115,8 +115,7 @@ export function getAuctionImage(
     id?: string;
     imageUrl?: string | null;
     categoryName?: string | null;
-  },
-  _size?: "card" | "detail"
+  }
 ): string {
   if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
     return auction.imageUrl.trim();
@@ -432,8 +431,7 @@ export function getPrimaryImage(
     imageUrl?: string | null;
     images?: string[] | null;
     categoryName?: string | null;
-  },
-  _size?: "card" | "detail"
+  }
 ): string {
   if (Array.isArray(auction.images) && auction.images.length > 0) {
     const firstImage = auction.images.find(

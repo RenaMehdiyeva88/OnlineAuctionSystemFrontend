@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import auctionApi from "@/api/auctionApi";
 import bidApi from "@/api/bidApi";
+import orderApi from "@/api/orderApi";
 import { useI18n } from "@/context/I18nContext";
 import type { Auction } from "@/models/Auction";
 import type { Bid } from "@/models/Bid";
+import type { Order } from "@/models/Order";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { useAuctionHub } from "@/hooks/useAuctionHub";
@@ -18,6 +20,7 @@ import BidForm from "@/components/bid/BidForm";
 import BidHistoryList from "@/components/bid/BidHistoryList";
 import Spinner from "@/components/common/Spinner";
 import ErrorBanner from "@/components/common/ErrorBanner";
+import Button from "@/components/common/Button";
 import { extractErrorMessage } from "@/api/axiosClient";
 import "./AuctionDetails.css";
 
@@ -38,6 +41,14 @@ export default function AuctionDetails() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  const navigate = useNavigate();
+
+  // Phase3: checkout / manual payment confirmation. Only relevant once the
+  // auction has closed and the viewer is its actual winner — and even then
+  // the backend re-verifies that on every call, this is just UI gating.
+  const [myOrder, setMyOrder] = useState<Order | null>(null);
+  const [isCheckingOrder, setIsCheckingOrder] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const loadAuction = useCallback(() => {
     if (!id) return Promise.resolve();
@@ -60,6 +71,47 @@ export default function AuctionDetails() {
       .finally(() => setIsLoading(false));
   }, [loadAuction]);
 
+  // Phase3: once the auction is closed and the viewer is the actual winner
+  // (per the database — auction.winnerId, never a guess), check whether a
+  // checkout already exists so we can show "Continue to payment" instead
+  // of "Checkout" a second time.
+  useEffect(() => {
+    if (!id || !auction || !user) {
+      setMyOrder(null);
+      return;
+    }
+    const isWinner = auction.status === "Closed" && auction.winnerId === user.id;
+    if (!isWinner) {
+      setMyOrder(null);
+      return;
+    }
+    setIsCheckingOrder(true);
+    orderApi
+      .getByAuction(id)
+      .then(setMyOrder)
+      .catch(() => setMyOrder(null))
+      .finally(() => setIsCheckingOrder(false));
+  }, [id, auction, user]);
+
+  async function handleCheckout() {
+    if (!id) return;
+    setIsCheckingOut(true);
+    try {
+      const order = await orderApi.create({ auctionId: id });
+      setMyOrder(order);
+      pushToast(t.orders.checkoutStarted, "success");
+      navigate(`/orders/mine`);
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        // Someone else's click, a page refresh race, etc. — just resync.
+        orderApi.getByAuction(id).then(setMyOrder).catch(() => undefined);
+      }
+      pushToast(extractErrorMessage(err), "error");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  }
+
   async function handleLoadMoreBids() {
     if (!id || isLoadingMoreBids) return;
     setIsLoadingMoreBids(true);
@@ -81,7 +133,7 @@ export default function AuctionDetails() {
   // specific user affected, not a live "NewBid" broadcast to every viewer
   // (see useAuctionHub for details) — so we refetch on outbid to bring this
   // page's price/history back in sync for the person who was just outbid.
-   useAuctionHub(id, {
+  useAuctionHub(id, {
     onOutbid: (payload) => {
       if (payload.auctionId === id) {
         pushToast("You've just been outbid! Place a higher bid to stay in the running.", "outbid");
@@ -89,10 +141,14 @@ export default function AuctionDetails() {
       }
     },
     onAuctionWon: (payload) => {
-      if (payload.auctionId === id && user) {
-        pushToast(`Congratulations — you won this lot for ${formatCurrency(payload.winningAmount)}!`, "success");
+      if (payload.auctionId === id) {
+        if (user) {
+          pushToast(`Congratulations — you won this lot for ${formatCurrency(payload.winningAmount)}!`, "success");
+        }
+        setHasEnded(true);
+        // Reload so auction.status / winnerId come from the database.
+        loadAuction().catch((err) => setError(extractErrorMessage(err)));
       }
-      setHasEnded(true);
     },
     onAuctionClosed: (payload) => {
       if (payload.auctionId === id) {
@@ -179,6 +235,24 @@ export default function AuctionDetails() {
           {hasEnded && auction.winnerName ? (
             <div className="auction-details__winner">
               🏆 {t.auction.winner}: <strong>{auction.winnerName}</strong> for {formatCurrency(auction.currentHighestBid)}
+            </div>
+          ) : null}
+
+          {hasEnded && user && auction.winnerId === user.id ? (
+            <div className="auction-details__checkout">
+              {isCheckingOrder ? null : myOrder ? (
+                <>
+                  <p>{t.orders.youWonCheckoutExists}</p>
+                  <Button onClick={() => navigate("/orders/mine")}>{t.orders.viewMyOrder}</Button>
+                </>
+              ) : (
+                <>
+                  <p>{t.orders.youWonCheckoutPrompt}</p>
+                  <Button isLoading={isCheckingOut} onClick={handleCheckout}>
+                    {t.orders.checkoutButton}
+                  </Button>
+                </>
+              )}
             </div>
           ) : null}
 

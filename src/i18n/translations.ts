@@ -130,6 +130,10 @@ export interface Translations {
     createAuctionValidationPrice: string;
     createAuctionValidationEndTime: string;
     createAuctionValidationCategory: string;
+    createAuctionAiSuggest: string;
+    createAuctionAiSuggesting: string;
+    createAuctionAiHint: string;
+    createAuctionAiError: string;
     sellerDashboardEyebrow: string;
     sellerDashboardTitle: string;
     sellerDashboardNewAuction: string;
@@ -149,6 +153,17 @@ export interface Translations {
     sellerDashboardNoBids: string;
     sellerDashboardView: string;
     sellerDashboardLoading: string;
+  };
+  aiChat: {
+    launcherLabel: string;
+    title: string;
+    subtitle: string;
+    placeholder: string;
+    send: string;
+    greeting: string;
+    thinking: string;
+    unavailable: string;
+    close: string;
   };
 }
 
@@ -282,6 +297,10 @@ export const en: Translations = {
     createAuctionValidationPrice: 'Starting price',
     createAuctionValidationEndTime: 'Closing date & time',
     createAuctionValidationCategory: 'Choose a category for your lot.',
+    createAuctionAiSuggest: '✦ Suggest with AI',
+    createAuctionAiSuggesting: 'Thinking…',
+    createAuctionAiHint: 'Type a description first, then let AI suggest a title, category and starting price — you can edit everything before publishing.',
+    createAuctionAiError: 'Could not generate suggestions right now. Please fill the fields in yourself.',
     sellerDashboardEyebrow: 'Your listings',
     sellerDashboardTitle: 'Seller dashboard',
     sellerDashboardNewAuction: '+ New auction',
@@ -301,6 +320,17 @@ export const en: Translations = {
     sellerDashboardNoBids: 'No bids placed',
     sellerDashboardView: 'View',
     sellerDashboardLoading: 'Loading your dashboard…',
+  },
+  aiChat: {
+    launcherLabel: 'Ask AI',
+    title: 'AI Assistant',
+    subtitle: 'Ask about lots, bidding rules, or how the platform works',
+    placeholder: 'Type your question…',
+    send: 'Send',
+    greeting: "Hi! I can help you find lots, explain bidding rules, or answer questions about the platform. What would you like to know?",
+    thinking: 'Thinking…',
+    unavailable: 'The AI assistant is unavailable right now. Please try again later.',
+    close: 'Close',
   },
 };
 
@@ -434,6 +464,10 @@ export const ru: Translations = {
     createAuctionValidationPrice: 'Начальная цена',
     createAuctionValidationEndTime: 'Дата и время окончания',
     createAuctionValidationCategory: 'Выберите категорию для вашего лота.',
+    createAuctionAiSuggest: '✦ Предложить с AI',
+    createAuctionAiSuggesting: 'Думаю…',
+    createAuctionAiHint: 'Сначала напишите описание, затем AI предложит название, категорию и начальную цену — всё можно отредактировать перед публикацией.',
+    createAuctionAiError: 'Не удалось получить предложения. Заполните поля вручную.',
     sellerDashboardEyebrow: 'Ваши объявления',
     sellerDashboardTitle: 'Панель продавца',
     sellerDashboardNewAuction: '+ Новый аукцион',
@@ -453,6 +487,17 @@ export const ru: Translations = {
     sellerDashboardNoBids: 'Ставок не было',
     sellerDashboardView: 'Открыть',
     sellerDashboardLoading: 'Загружаем вашу панель…',
+  },
+  aiChat: {
+    launcherLabel: 'Спросить AI',
+    title: 'AI-помощник',
+    subtitle: 'Спросите про лоты, правила ставок или работу платформы',
+    placeholder: 'Введите вопрос…',
+    send: 'Отправить',
+    greeting: 'Привет! Я могу помочь найти лоты, объяснить правила ставок или ответить на вопросы о платформе. Что вас интересует?',
+    thinking: 'Печатает…',
+    unavailable: 'AI-помощник сейчас недоступен. Попробуйте позже.',
+    close: 'Закрыть',
   },
 };
 
@@ -586,6 +631,10 @@ export const az: Translations = {
     createAuctionValidationPrice: 'Başlanğıc qiyməti',
     createAuctionValidationEndTime: 'Bitmə tarixi və vaxtı',
     createAuctionValidationCategory: 'Lotunuz üçün kategoriya seçin.',
+    createAuctionAiSuggest: '✦ AI ilə təklif et',
+    createAuctionAiSuggesting: 'Düşünür…',
+    createAuctionAiHint: 'Əvvəlcə təsvir yazın, sonra AI başlıq, kateqoriya və başlanğıc qiymət təklif etsin — dərc etməzdən əvvəl hamısını redaktə edə bilərsiniz.',
+    createAuctionAiError: 'Təkliflər alına bilmədi. Sahələri özünüz doldurun.',
     sellerDashboardEyebrow: 'Elanlarınız',
     sellerDashboardTitle: 'Satıcı paneli',
     sellerDashboardNewAuction: '+ Yeni auksion',
@@ -605,6 +654,17 @@ export const az: Translations = {
     sellerDashboardNoBids: 'Təklif verilməyib',
     sellerDashboardView: 'Bax',
     sellerDashboardLoading: 'Panel yüklənir…',
+  },
+  aiChat: {
+    launcherLabel: 'AI-dan soruş',
+    title: 'AI Köməkçi',
+    subtitle: 'Lotlar, təklif qaydaları və ya platformanın işi haqqında soruşun',
+    placeholder: 'Sualınızı yazın…',
+    send: 'Göndər',
+    greeting: 'Salam! Lot tapmağa, təklif qaydalarını izah etməyə və ya platforma haqqında suallara cavab verməyə kömək edə bilərəm. Nə bilmək istərdiniz?',
+    thinking: 'Yazır…',
+    unavailable: 'AI köməkçisi hazırda əlçatan deyil. Zəhmət olmasa bir az sonra yenidən cəhd edin.',
+    close: 'Bağla',
   },
 };
 
