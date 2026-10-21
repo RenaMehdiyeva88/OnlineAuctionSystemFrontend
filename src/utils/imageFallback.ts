@@ -75,6 +75,44 @@ function simpleHash(value: string): number {
   return Math.abs(hash);
 }
 
+// Product photos that exist in /public/images/lots, with words that identify
+// them (English / Russian / Azerbaijani stems). Used to give an AI-generated
+// listing a photo of the SAME kind of item, or no photo at all.
+const PRODUCT_IMAGE_KEYWORDS: Array<{ folders: string[]; words: string[] }> = [
+  { folders: ["airpods"], words: ["airpod", "earbud", "headphone", "наушник", "qulaqlıq"] },
+  { folders: ["ancient-coins"], words: ["coin", "numismat", "монет", "sikkə"] },
+  { folders: ["antique-book"], words: ["book", "manuscript", "novel", "книг", "kitab"] },
+  { folders: ["baseball-glove"], words: ["baseball", "glove", "перчатк", "əlcək"] },
+  { folders: ["canon-camera"], words: ["camera", "камер", "фотоаппарат", "kamera"] },
+  { folders: ["monet-painting", "van-gogh-painting"], words: ["painting", "картин", "rəsm", "canvas", "холст"] },
+  { folders: ["nes-console"], words: ["console", "nintendo", "консол", "konsol"] },
+  { folders: ["nike-shoes"], words: ["sneaker", "shoe", "кроссов", "ботин", "ayaqqabı"] },
+  { folders: ["omega-watch", "rolex-watch"], words: ["watch", "chronograph", "часы", "часов", "saat"] },
+  { folders: ["quilted-handbag"], words: ["handbag", "purse", "сумк", "çanta"] },
+  { folders: ["rayban-sunglasses"], words: ["sunglass", "очки", "eynək"] },
+  { folders: ["silk-scarf"], words: ["scarf", "шарф", "şərf"] },
+  { folders: ["wooden-desk"], words: ["desk", "письменн", "yazı masası"] },
+  { folders: ["wrought-iron-lamp"], words: ["lamp", "лампа", "светильник", "lampa"] },
+];
+
+// Picks a photo from the local gallery that matches the listing's title (then
+// its description). Returns a site-relative path, or null when nothing in the
+// gallery resembles the item — a wrong photo is worse than none, and a lot
+// without an image automatically gets its category's fallback picture.
+export function pickImageForListing(title?: string | null, description?: string | null): string | null {
+  for (const text of [title, description]) {
+    const haystack = (text ?? "").toLowerCase();
+    if (!haystack) continue;
+
+    const hit = PRODUCT_IMAGE_KEYWORDS.find((p) => p.words.some((w) => haystack.includes(w)));
+    if (hit) {
+      const folder = hit.folders[Math.floor(Math.random() * hit.folders.length)];
+      return `/images/lots/${folder}/1.jpg`;
+    }
+  }
+  return null;
+}
+
 function getDeterministicImage(images: string[], seed: string): string {
   if (images.length === 0) {
     return GENERAL_FALLBACK_IMAGES[0];
@@ -115,7 +153,8 @@ export function getAuctionImage(
     id?: string;
     imageUrl?: string | null;
     categoryName?: string | null;
-  }
+  },
+  _size?: "card" | "detail"
 ): string {
   if (typeof auction.imageUrl === "string" && auction.imageUrl.trim() !== "") {
     return auction.imageUrl.trim();
@@ -431,7 +470,8 @@ export function getPrimaryImage(
     imageUrl?: string | null;
     images?: string[] | null;
     categoryName?: string | null;
-  }
+  },
+  _size?: "card" | "detail"
 ): string {
   if (Array.isArray(auction.images) && auction.images.length > 0) {
     const firstImage = auction.images.find(

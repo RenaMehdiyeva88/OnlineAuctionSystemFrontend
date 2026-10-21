@@ -17,7 +17,7 @@ export default function LanguageThemeSwitcher() {
           value={language}
           onChange={(e) => setLanguage(e.target.value as Language)}
           className="switcher-select"
-          aria-label="Select language"
+          aria-label={t.ui.selectLanguage}
         >
           {languages.map((lang) => (
             <option key={lang} value={lang}>

@@ -61,11 +61,11 @@ export default function Profile() {
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match.");
+      setPasswordError(t.ui.profilePasswordsMismatch);
       return;
     }
     if (currentPassword === newPassword) {
-      setPasswordError("New password must be different from the current password.");
+      setPasswordError(t.ui.profilePasswordSame);
       return;
     }
 
@@ -110,37 +110,37 @@ export default function Profile() {
       </div>
 
       <div className="profile-card profile-card--form">
-        <h2 className="profile-card__title">Change password</h2>
+        <h2 className="profile-card__title">{t.ui.profileChangePassword}</h2>
 
         {passwordSuccess ? (
-          <p className="auth-card__success">Your password was updated.</p>
+          <p className="auth-card__success">{t.ui.profilePasswordUpdated}</p>
         ) : null}
         {passwordError ? <ErrorBanner message={passwordError} /> : null}
 
         <form onSubmit={handleChangePassword}>
           <PasswordInput
-            label="Current password"
+            label={t.ui.profileCurrentPassword}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             required
             autoComplete="current-password"
           />
           <PasswordInput
-            label="New password"
+            label={t.ui.profileNewPassword}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
             autoComplete="new-password"
           />
           <PasswordInput
-            label="Confirm new password"
+            label={t.ui.profileConfirmNewPassword}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
           />
           <Button type="submit" isLoading={isChangingPassword}>
-            Update password
+            {t.ui.profileUpdatePassword}
           </Button>
         </form>
       </div>

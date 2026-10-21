@@ -1,0 +1,30 @@
+.my-orders {
+  padding-block: var(--space-8, 2rem);
+}
+
+.my-orders__header {
+  margin-bottom: 1.5rem;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.orders-table__title {
+  color: inherit;
+  font-weight: 600;
+}
+
+.my-orders__load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}

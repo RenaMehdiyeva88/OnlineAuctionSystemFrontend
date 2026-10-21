@@ -15,6 +15,7 @@ export interface Auction {
   sellerId: string;
   sellerName: string;
   categoryName: string;
+  winnerId: string | null;
   winnerName: string | null;
 }
 

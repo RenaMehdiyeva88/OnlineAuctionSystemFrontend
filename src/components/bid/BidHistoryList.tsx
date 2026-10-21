@@ -2,6 +2,7 @@ import type { Bid } from "@/models/Bid";
 import { formatCurrency, formatDateTime } from "@/utils/formatters";
 import EmptyState from "@/components/common/EmptyState";
 import Button from "@/components/common/Button";
+import { useI18n } from "@/context/I18nContext";
 import "./BidHistoryList.css";
 
 interface BidHistoryListProps {
@@ -15,8 +16,9 @@ interface BidHistoryListProps {
 // Backend paginates this list now, so a "Load more" button appends the next
 // page instead of everything loading at once.
 export default function BidHistoryList({ bids, hasMore, isLoadingMore, onLoadMore }: BidHistoryListProps) {
+  const { t } = useI18n();
   if (bids.length === 0) {
-    return <EmptyState title="No bids yet" description="Be the first to place a bid on this lot." />;
+    return <EmptyState title={t.ui.bidsEmptyTitle} description={t.ui.bidsEmptyDesc} />;
   }
 
   return (
@@ -26,7 +28,7 @@ export default function BidHistoryList({ bids, hasMore, isLoadingMore, onLoadMor
           <li key={bid.id} className={`bid-history__row ${index === 0 ? "bid-history__row--top" : ""}`}>
             <span className="bid-history__bidder">
               {bid.bidderName}
-              {index === 0 ? <span className="bid-history__top-tag">Highest</span> : null}
+              {index === 0 ? <span className="bid-history__top-tag">{t.ui.bidHighest}</span> : null}
             </span>
             <span className="bid-history__time">{formatDateTime(bid.createdAt)}</span>
             <span className="bid-history__amount mono">{formatCurrency(bid.amount)}</span>
@@ -37,7 +39,7 @@ export default function BidHistoryList({ bids, hasMore, isLoadingMore, onLoadMor
       {hasMore ? (
         <div className="bid-history__load-more">
           <Button variant="secondary" size="sm" isLoading={isLoadingMore} onClick={onLoadMore}>
-            Load more bids
+            {t.ui.bidsLoadMore}
           </Button>
         </div>
       ) : null}

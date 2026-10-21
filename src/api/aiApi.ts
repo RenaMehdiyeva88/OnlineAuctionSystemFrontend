@@ -14,6 +14,7 @@ export interface AiListingSuggestion {
   suggestedCategoryId: string | null;
   suggestedCategoryName: string | null;
   suggestedStartingPrice: number | null;
+  suggestedDescription: string | null;
   note: string;
 }
 
@@ -29,9 +30,11 @@ const aiApi = {
   // Seller-only — powers the "Suggest with AI" button on the create-auction
   // form. sellerInput is whatever the seller has typed into title/description
   // so far.
-  suggestListing: (sellerInput: string) =>
+  // With an empty sellerInput the backend proposes a whole listing idea in `language`.
+  // avoidTitles: ideas already shown, so the model invents a different one.
+  suggestListing: (sellerInput: string, language?: string, avoidTitles?: string[]) =>
     axiosClient
-      .post<AiListingSuggestion>("/ai/suggest-listing", { sellerInput })
+      .post<AiListingSuggestion>("/ai/suggest-listing", { sellerInput, language, avoidTitles })
       .then((res: AxiosResponse<AiListingSuggestion>) => res.data),
 };
 

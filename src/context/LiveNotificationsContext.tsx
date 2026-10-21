@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { useNotificationHub } from "@/hooks/useNotificationHub";
 import notificationApi from "@/api/notificationApi";
+import { currentT, fmt } from "@/i18n/translations";
 
 interface LiveNotificationsContextValue {
   unreadCount: number;
@@ -44,20 +45,20 @@ export function LiveNotificationsProvider({ children }: { children: ReactNode })
 
   useNotificationHub(isAuthenticated, {
     onOutbid: (payload) => {
-      pushToast("You've just been outbid! Place a higher bid to stay in the running.", "outbid");
+      pushToast(currentT().ui.toastOutbid, "outbid");
       setUnreadCount((count) => count + 1);
       void payload;
     },
     onAuctionWon: () => {
-      pushToast("Congratulations — you won an auction!", "success");
+      pushToast(currentT().ui.toastWonAuction, "success");
       setUnreadCount((count) => count + 1);
     },
     onAuctionClosed: () => {
-      pushToast("One of your auctions has closed.", "info");
+      pushToast(currentT().ui.toastAuctionClosed, "info");
       setUnreadCount((count) => count + 1);
     },
     onNewBid: (payload) => {
-      pushToast(`${payload.bidderName} placed a new bid on your auction.`, "info");
+      pushToast(fmt(currentT().ui.toastNewBid, { name: payload.bidderName }), "info");
       setUnreadCount((count) => count + 1);
     },
   });

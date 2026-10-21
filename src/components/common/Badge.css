@@ -46,6 +46,25 @@
   flex-shrink: 0;
 }
 
+.badge--order-pending,
+.badge--order-awaiting {
+  background: rgba(169, 188, 172, 0.12);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.badge--order-paid {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: rgba(76, 154, 107, 0.3);
+}
+
+.badge--order-cancelled {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: rgba(214, 69, 69, 0.3);
+}
+
 .badge--cancelled {
   background: var(--color-danger-bg);
   color: var(--color-danger);

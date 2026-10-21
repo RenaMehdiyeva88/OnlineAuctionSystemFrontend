@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import Button from "@/components/common/Button";
 import { formatCurrency } from "@/utils/formatters";
 import { validateBidAmount } from "@/utils/validators";
+import { useI18n } from "@/context/I18nContext";
+import { fmt } from "@/i18n/translations";
 import "./BidForm.css";
 
 interface BidFormProps {
@@ -23,6 +25,7 @@ export default function BidForm({
   isSubmitting,
   onSubmit,
 }: BidFormProps) {
+  const { t } = useI18n();
   const minBid = currentHighestBid + 1;
   const [amount, setAmount] = useState(minBid.toString());
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function BidForm({
     e.preventDefault();
     const validationError = validateBidAmount(amount, currentHighestBid);
     if (validationError) {
-      setError(`Your bid must be higher than ${formatCurrency(currentHighestBid)}.`);
+      setError(fmt(t.ui.bidMustExceed, { amount: formatCurrency(currentHighestBid) }));
       return;
     }
     setError(null);
@@ -39,15 +42,15 @@ export default function BidForm({
   }
 
   if (!isAuthenticated) {
-    return <p className="bid-form__notice">Log in as a buyer to place a bid on this lot.</p>;
+    return <p className="bid-form__notice">{t.ui.bidLoginNotice}</p>;
   }
 
   if (isSeller) {
-    return <p className="bid-form__notice">You listed this lot — sellers can't bid on their own auctions.</p>;
+    return <p className="bid-form__notice">{t.ui.bidSellerNotice}</p>;
   }
 
   if (isEnded) {
-    return <p className="bid-form__notice">Bidding has closed on this lot.</p>;
+    return <p className="bid-form__notice">{t.ui.bidClosedNotice}</p>;
   }
 
   return (
@@ -61,13 +64,13 @@ export default function BidForm({
           min={minBid}
           step="0.01"
           onChange={(e) => setAmount(e.target.value)}
-          aria-label="Your bid amount"
+          aria-label={t.ui.bidAria}
         />
         <Button type="submit" isLoading={isSubmitting}>
-          Place bid
+          {t.auction.placeBid}
         </Button>
       </div>
-      {error ? <span className="bid-form__error">{error}</span> : <span className="bid-form__hint">Minimum bid: {formatCurrency(minBid)}</span>}
+      {error ? <span className="bid-form__error">{error}</span> : <span className="bid-form__hint">{t.auction.minBid}: {formatCurrency(minBid)}</span>}
     </form>
   );
 }

@@ -1,5 +1,11 @@
 import axiosClient from "./axiosClient";
-import type { AuthResponse, LoginRequest, RegisterRequest } from "@/models/User";
+import type {
+  AuthResponse,
+  LoginRequest,
+  LoginStartResponse,
+  RegisterRequest,
+  VerifyLoginCodeRequest,
+} from "@/models/User";
 
 export interface ChangePasswordRequest {
   currentPassword: string;
@@ -21,8 +27,13 @@ const authApi = {
   register: (payload: RegisterRequest) =>
     axiosClient.post<AuthResponse>("/auth/register", payload).then((res) => res.data),
 
+  // Step 1: email + password. The server emails a 6-digit code.
   login: (payload: LoginRequest) =>
-    axiosClient.post<AuthResponse>("/auth/login", payload).then((res) => res.data),
+    axiosClient.post<LoginStartResponse>("/auth/login", payload).then((res) => res.data),
+
+  // Step 2: exchange the emailed code for tokens.
+  verifyLoginCode: (payload: VerifyLoginCodeRequest) =>
+    axiosClient.post<AuthResponse>("/auth/login/verify-code", payload).then((res) => res.data),
 
   refreshToken: (accessToken: string, refreshToken: string) =>
     axiosClient

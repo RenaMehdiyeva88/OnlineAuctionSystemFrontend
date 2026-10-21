@@ -5,6 +5,7 @@ import auctionApi from "@/api/auctionApi";
 import bidApi from "@/api/bidApi";
 import orderApi from "@/api/orderApi";
 import { useI18n } from "@/context/I18nContext";
+import { fmt } from "@/i18n/translations";
 import type { Auction } from "@/models/Auction";
 import type { Bid } from "@/models/Bid";
 import type { Order } from "@/models/Order";
@@ -133,20 +134,23 @@ export default function AuctionDetails() {
   // specific user affected, not a live "NewBid" broadcast to every viewer
   // (see useAuctionHub for details) — so we refetch on outbid to bring this
   // page's price/history back in sync for the person who was just outbid.
-  useAuctionHub(id, {
+   useAuctionHub(id, {
     onOutbid: (payload) => {
       if (payload.auctionId === id) {
-        pushToast("You've just been outbid! Place a higher bid to stay in the running.", "outbid");
+        pushToast(t.ui.toastOutbid, "outbid");
         loadAuction().catch((err) => setError(extractErrorMessage(err)));
       }
     },
     onAuctionWon: (payload) => {
+      if (payload.auctionId === id && user) {
+        pushToast(fmt(t.ui.toastWonAmount, { amount: formatCurrency(payload.winningAmount) }), "success");
+      }
+      setHasEnded(true);
+      // Reload so auction.status / winnerId come from the database — the
+      // Checkout block is gated on them, and without this a winner who's
+      // sitting on the page when it closes wouldn't see Checkout until a
+      // manual refresh.
       if (payload.auctionId === id) {
-        if (user) {
-          pushToast(`Congratulations — you won this lot for ${formatCurrency(payload.winningAmount)}!`, "success");
-        }
-        setHasEnded(true);
-        // Reload so auction.status / winnerId come from the database.
         loadAuction().catch((err) => setError(extractErrorMessage(err)));
       }
     },
@@ -169,7 +173,7 @@ export default function AuctionDetails() {
     setIsSubmittingBid(true);
     try {
       await bidApi.place({ auctionId: id, amount });
-      pushToast("Your bid was placed successfully.", "success");
+      pushToast(t.ui.toastBidPlaced, "success");
       // No live "NewBid" broadcast from the backend yet — refetch to reflect
       // our own bid immediately instead of waiting for one.
       await loadAuction();
@@ -182,7 +186,7 @@ export default function AuctionDetails() {
       // own message and an automatic refresh instead of a generic error.
       if (axios.isAxiosError(err) && err.response?.status === 409) {
         pushToast(
-          "Someone just placed a bid on this auction before yours went through. Refreshing the latest price…",
+          t.ui.toastBidConflict,
           "outbid"
         );
         await loadAuction().catch((loadErr) => setError(extractErrorMessage(loadErr)));
@@ -195,7 +199,7 @@ export default function AuctionDetails() {
   }
 
   if (isLoading) return <Spinner fullPage label={t.common.loading} />;
-  if (error || !auction) return <div className="container"><ErrorBanner message={error ?? "Auction not found."} /></div>;
+  if (error || !auction) return <div className="container"><ErrorBanner message={error ?? t.ui.auctionNotFound} /></div>;
 
   // Seller identity check using sellerId (safe and permanent)
   const isSeller = user?.id === auction.sellerId;
@@ -208,7 +212,9 @@ export default function AuctionDetails() {
             images={
               auction.images && auction.images.length > 0
                 ? auction.images
-                : getGalleryImages(auction.title, auction.categoryName, 5)
+                : auction.imageUrl && auction.imageUrl.trim() !== ""
+                  ? [auction.imageUrl.trim()] // the seller's own photo, not filler pictures
+                  : getGalleryImages(auction.title, auction.categoryName, 5)
             }
             title={auction.title}
           />
@@ -234,7 +240,7 @@ export default function AuctionDetails() {
 
           {hasEnded && auction.winnerName ? (
             <div className="auction-details__winner">
-              🏆 {t.auction.winner}: <strong>{auction.winnerName}</strong> for {formatCurrency(auction.currentHighestBid)}
+              🏆 {t.auction.winner}: <strong>{auction.winnerName}</strong> {t.ui.winnerFor} {formatCurrency(auction.currentHighestBid)}
             </div>
           ) : null}
 

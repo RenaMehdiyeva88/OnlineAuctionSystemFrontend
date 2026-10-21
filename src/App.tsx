@@ -19,6 +19,8 @@ import CreateAuction from "@/pages/CreateAuction/CreateAuction";
 import SellerDashboard from "@/pages/SellerDashboard/SellerDashboard";
 import Profile from "@/pages/Profile/Profile";
 import Notifications from "@/pages/Notifications/Notifications";
+import MyOrders from "@/pages/MyOrders/MyOrders";
+import MySales from "@/pages/MySales/MySales";
 import NotFound from "@/pages/NotFound/NotFound";
 
 export default function App() {
@@ -43,6 +45,8 @@ export default function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="profile" element={<Profile />} />
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="orders/mine" element={<MyOrders />} />
+                <Route path="seller/sales" element={<MySales />} />
               </Route>
 
               {/* F2/F6: seller-only routes */}

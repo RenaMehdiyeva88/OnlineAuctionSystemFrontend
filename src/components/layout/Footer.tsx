@@ -15,7 +15,7 @@ export default function Footer() {
             <span>Auctionhouse</span>
           </div>
           <p className="footer__tagline">
-            Fair bidding. Transparent pricing. Secure transactions.
+            {t.ui.footerTagline}
           </p>
         </div>
 
@@ -25,27 +25,27 @@ export default function Footer() {
           <ul className="footer__links">
             <li><Link to="/auctions">{t.auctions.browse}</Link></li>
             <li><Link to="/auctions">{t.home.categories}</Link></li>
-            <li><Link to="/">How it works</Link></li>
+            <li><Link to="/">{t.ui.footerHowItWorks}</Link></li>
           </ul>
         </div>
 
         {/* ---- Sell Section ---- */}
         <div className="footer__section">
-          <h4 className="footer__section-title">Sell</h4>
+          <h4 className="footer__section-title">{t.ui.footerSell}</h4>
           <ul className="footer__links">
-            <li><Link to="/register">Start selling</Link></li>
-            <li><Link to="/">Seller fees</Link></li>
-            <li><Link to="/">Authentication</Link></li>
+            <li><Link to="/register">{t.ui.footerStartSelling}</Link></li>
+            <li><Link to="/">{t.ui.footerSellerFees}</Link></li>
+            <li><Link to="/">{t.ui.footerAuthentication}</Link></li>
           </ul>
         </div>
 
         {/* ---- Support Section ---- */}
         <div className="footer__section">
-          <h4 className="footer__section-title">Support</h4>
+          <h4 className="footer__section-title">{t.ui.footerSupport}</h4>
           <ul className="footer__links">
-            <li><a href="mailto:support@auctionhouse.local">Contact us</a></li>
-            <li><Link to="/">Help center</Link></li>
-            <li><Link to="/">Terms of service</Link></li>
+            <li><a href="mailto:support@auctionhouse.local">{t.ui.footerContact}</a></li>
+            <li><Link to="/">{t.ui.footerHelpCenter}</Link></li>
+            <li><Link to="/">{t.ui.footerTerms}</Link></li>
           </ul>
         </div>
       </div>
@@ -54,12 +54,12 @@ export default function Footer() {
       <div className="footer__bottom">
         <div className="container footer__bottom-content">
           <span className="footer__copyright">
-            © {new Date().getFullYear()} Auctionhouse. All rights reserved.
+            © {new Date().getFullYear()} Auctionhouse. {t.ui.footerRights}
           </span>
           <div className="footer__legal">
-            <a href="/" className="footer__legal-link">Privacy Policy</a>
-            <a href="/" className="footer__legal-link">Terms of Service</a>
-            <a href="/" className="footer__legal-link">Cookies</a>
+            <a href="/" className="footer__legal-link">{t.ui.footerPrivacy}</a>
+            <a href="/" className="footer__legal-link">{t.ui.footerTerms}</a>
+            <a href="/" className="footer__legal-link">{t.ui.footerCookies}</a>
           </div>
         </div>
       </div>

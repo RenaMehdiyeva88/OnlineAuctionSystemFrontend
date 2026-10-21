@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import auctionApi from "@/api/auctionApi";
 import categoryApi from "@/api/categoryApi";
 import { useI18n } from "@/context/I18nContext";
+import { fmt } from "@/i18n/translations";
 import type { AuctionListItem, AuctionSearchParams } from "@/models/Auction";
 import type { Category } from "@/models/Category";
 import AuctionGrid from "@/components/auction/AuctionGrid";
@@ -124,9 +125,11 @@ export default function Auctions() {
 
   // Determine result count message
   const resultCountMessage = filteredAuctions.length > 0
-    ? `Showing ${filteredAuctions.length} lot${filteredAuctions.length !== 1 ? 's' : ''}`
+    ? filteredAuctions.length === 1
+      ? t.ui.auctionsShowingOne
+      : fmt(t.ui.auctionsShowingMany, { n: filteredAuctions.length })
     : filters.keyword
-    ? `No auctions found for "${filters.keyword}"`
+    ? fmt(t.ui.auctionsNoneFor, { keyword: filters.keyword })
     : t.auctions.noResults;
 
   return (
@@ -158,10 +161,10 @@ export default function Auctions() {
           ) : filteredAuctions.length === 0 ? (
             // No results found (empty state)
             <EmptyState 
-              title={filters.keyword ? "No auctions found" : "No auctions available"}
+              title={filters.keyword ? t.ui.auctionsNoneTitle : t.ui.auctionsNoneAvailable}
               description={filters.keyword 
-                ? `We couldn't find any auctions matching "${filters.keyword}". Try a different search term.`
-                : "Check back soon or refine your search criteria."
+                ? fmt(t.ui.auctionsNoneDescKeyword, { keyword: filters.keyword })
+                : t.ui.auctionsNoneDescGeneric
               }
             />
           ) : (

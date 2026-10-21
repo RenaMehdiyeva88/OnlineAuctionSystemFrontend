@@ -1,4 +1,5 @@
 import { useState, type InputHTMLAttributes } from "react";
+import { useI18n } from "@/context/I18nContext";
 import "./PasswordInput.css";
 
 interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "id"> {
@@ -7,6 +8,7 @@ interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
 }
 
 export default function PasswordInput({ label, id, ...rest }: PasswordInputProps) {
+  const { t } = useI18n();
   const [visible, setVisible] = useState(false);
   const inputId = id ?? `pw-${label.toLowerCase().replace(/\s+/g, "-")}`;
 
@@ -26,7 +28,7 @@ export default function PasswordInput({ label, id, ...rest }: PasswordInputProps
           type="button"
           className="password-field__toggle"
           onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "Hide password" : "Show password"}
+          aria-label={visible ? t.ui.hidePassword : t.ui.showPassword}
           tabIndex={-1}
         >
           {visible ? "🙈" : "👁"}

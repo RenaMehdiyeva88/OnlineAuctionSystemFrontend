@@ -6,6 +6,7 @@ import {
   AUTH_USER_STORAGE_KEY,
 } from "@/utils/constants";
 import type { AuthResponse } from "@/models/User";
+import { currentT } from "@/i18n/translations";
 
 // Single axios instance used by every api/*Api.ts file. Keeping the base
 // URL and interceptors here means the whole app's backend wiring lives in
@@ -112,6 +113,7 @@ interface BackendErrorPayload {
 // ForbiddenException / ConflictException / etc.) into a single readable
 // message so every page can display errors consistently.
 export function extractErrorMessage(error: unknown): string {
+  const { ui } = currentT();
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as BackendErrorPayload | string | undefined;
 
@@ -125,32 +127,32 @@ export function extractErrorMessage(error: unknown): string {
     const status = error.response?.status;
     switch (status) {
       case 401:
-        return "Please log in to continue.";
+        return ui.err401;
       case 403:
-        return "You don't have permission to perform this action.";
+        return ui.err403;
       case 404:
-        return "The item you're looking for doesn't exist.";
+        return ui.err404;
       case 409:
-        return "There was a conflict with your request. Please try again.";
+        return ui.err409;
       case 429:
-        return "Too many requests. Please wait a moment and try again.";
+        return ui.err429;
       case 500:
       case 502:
       case 503:
       case 504:
-        return "Server is temporarily unavailable. Please try again later.";
+        return ui.err5xx;
       case undefined:
         if (!navigator.onLine) {
-          return "No internet connection. Please check your network and try again.";
+          return ui.errOffline;
         }
-        return "Unable to connect to the server. Please check your connection and try again.";
+        return ui.errNetwork;
       default:
-        return error.response?.statusText || "An error occurred. Please try again.";
+        return error.response?.statusText || ui.errDefault;
     }
   }
 
   if (error instanceof Error) return error.message;
-  return "An unexpected error occurred. Please try again.";
+  return ui.errUnexpected;
 }
 
 // Field-level companion to extractErrorMessage — returns { fieldName: message }

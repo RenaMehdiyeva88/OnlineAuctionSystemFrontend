@@ -1,13 +1,23 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import authApi from "@/api/authApi";
-import type { AuthResponse, LoginRequest, RegisterRequest, User, UserRole } from "@/models/User";
+import type {
+  AuthResponse,
+  LoginRequest,
+  LoginStartResponse,
+  RegisterRequest,
+  User,
+  UserRole,
+  VerifyLoginCodeRequest,
+} from "@/models/User";
 import { AUTH_TOKEN_STORAGE_KEY, AUTH_REFRESH_TOKEN_STORAGE_KEY, AUTH_USER_STORAGE_KEY } from "@/utils/constants";
 
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (payload: LoginRequest) => Promise<void>;
+  // Resolves with requiresCode=true when the server emailed a code (step 2 needed).
+  login: (payload: LoginRequest) => Promise<LoginStartResponse>;
+  verifyLoginCode: (payload: VerifyLoginCodeRequest) => Promise<void>;
   register: (payload: RegisterRequest) => Promise<void>;
   logout: () => void;
   hasRole: (role: UserRole) => boolean;
@@ -56,7 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (payload: LoginRequest) => {
-    const auth = await authApi.login(payload);
+    const result = await authApi.login(payload);
+    if (!result.requiresCode && result.auth) {
+      setUser(persistSession(result.auth));
+    }
+    return result;
+  }, []);
+
+  const verifyLoginCode = useCallback(async (payload: VerifyLoginCodeRequest) => {
+    const auth = await authApi.verifyLoginCode(payload);
     setUser(persistSession(auth));
   }, []);
 
@@ -73,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hasRole = useCallback((role: UserRole) => user?.role === role, [user]);
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: !!user, isLoading, login, register, logout, hasRole }),
-    [user, isLoading, login, register, logout, hasRole]
+    () => ({ user, isAuthenticated: !!user, isLoading, login, verifyLoginCode, register, logout, hasRole }),
+    [user, isLoading, login, verifyLoginCode, register, logout, hasRole]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

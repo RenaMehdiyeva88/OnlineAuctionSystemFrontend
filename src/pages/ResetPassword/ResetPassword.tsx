@@ -6,12 +6,14 @@ import Button from "@/components/common/Button";
 import ErrorBanner from "@/components/common/ErrorBanner";
 import { extractErrorMessage } from "@/api/axiosClient";
 import { validatePassword } from "@/utils/validators";
+import { useI18n } from "@/context/I18nContext";
 import "@/pages/Login/Login.css";
 
 // Expects the emailed reset link to look like:
 //   /reset-password?email=<user@example.com>&token=<the token>
 // This matches ForgotPasswordCommandHandler's resetLink on the backend.
 export default function ResetPassword() {
+  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (!email || !token) {
-      setError("This reset link is invalid or has expired.");
+      setError(t.ui.resetInvalidLink);
       return;
     }
 
@@ -37,7 +39,7 @@ export default function ResetPassword() {
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t.ui.resetMismatch);
       return;
     }
 
@@ -58,9 +60,9 @@ export default function ResetPassword() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-card__icon">🔑</div>
-        <span className="auth-card__eyebrow">Password Recovery</span>
-        <h1>Reset password</h1>
-        <p>Choose a new password for your account.</p>
+        <span className="auth-card__eyebrow">{t.ui.forgotEyebrow}</span>
+        <h1>{t.ui.resetTitle}</h1>
+        <p>{t.ui.resetText}</p>
 
         {(!email || !token) ? (
           <ErrorBanner message="This reset link is invalid or has expired." />
@@ -70,26 +72,26 @@ export default function ResetPassword() {
 
         <form onSubmit={handleSubmit}>
           <PasswordInput
-            label="New password"
+            label={t.ui.profileNewPassword}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
             autoComplete="new-password"
           />
           <PasswordInput
-            label="Confirm new password"
+            label={t.ui.profileConfirmNewPassword}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
           />
           <Button type="submit" size="lg" isLoading={isSubmitting} className="auth-card__submit">
-            Reset password
+            {t.ui.resetTitle}
           </Button>
         </form>
 
         <p className="auth-card__switch">
-          <Link to="/login">Back to login</Link>
+          <Link to="/login">{t.ui.resetBack}</Link>
         </p>
       </div>
     </div>

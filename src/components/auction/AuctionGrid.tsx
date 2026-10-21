@@ -2,6 +2,7 @@ import type { AuctionListItem } from "@/models/Auction";
 import AuctionCard from "./AuctionCard";
 import { AuctionErrorBoundary } from "@/components/common/AuctionErrorBoundary";
 import EmptyState from "@/components/common/EmptyState";
+import { useI18n } from "@/context/I18nContext";
 import "./AuctionGrid.css";
 
 interface AuctionGridProps {
@@ -12,11 +13,18 @@ interface AuctionGridProps {
 
 export default function AuctionGrid({
   auctions,
-  emptyTitle = "No lots to show",
-  emptyDescription = "Try adjusting your filters or check back soon for new listings.",
+  emptyTitle,
+  emptyDescription,
 }: AuctionGridProps) {
+  const { t } = useI18n();
+
   if (auctions.length === 0) {
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return (
+      <EmptyState
+        title={emptyTitle ?? t.ui.gridEmptyTitle}
+        description={emptyDescription ?? t.ui.gridEmptyDesc}
+      />
+    );
   }
 
   return (

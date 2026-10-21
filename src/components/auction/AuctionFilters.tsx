@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import type { Category } from "@/models/Category";
 import type { AuctionSearchParams } from "@/models/Auction";
 import Button from "@/components/common/Button";
+import { useI18n } from "@/context/I18nContext";
 import { validatePriceRange } from "@/utils/validators";
 import "./AuctionFilters.css";
 
@@ -13,6 +14,7 @@ interface AuctionFiltersProps {
 
 // F8: category-based browsing and search with price range filter
 export default function AuctionFilters({ categories, initialValues, onApply }: AuctionFiltersProps) {
+  const { t } = useI18n();
   const [keyword, setKeyword] = useState(initialValues?.keyword ?? "");
   const [categoryId, setCategoryId] = useState(initialValues?.categoryId ?? "");
   const [minPrice, setMinPrice] = useState(initialValues?.minPrice?.toString() ?? "");
@@ -51,19 +53,19 @@ export default function AuctionFilters({ categories, initialValues, onApply }: A
       <input
         className="auction-filters__search"
         type="search"
-        placeholder="Search lots by title…"
+        placeholder={t.ui.filterSearchPlaceholder}
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
-        aria-label="Search by title"
+        aria-label={t.ui.filterSearchAria}
       />
 
       <select
         className="auction-filters__select"
         value={categoryId}
         onChange={(e) => setCategoryId(e.target.value)}
-        aria-label="Filter by category"
+        aria-label={t.ui.filterCategoryAria}
       >
-        <option value="">All categories</option>
+        <option value="">{t.ui.filterAllCategories}</option>
         {categories.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
@@ -75,28 +77,28 @@ export default function AuctionFilters({ categories, initialValues, onApply }: A
         <input
           type="number"
           min={0}
-          placeholder="Min $"
+          placeholder={t.ui.filterMinPlaceholder}
           value={minPrice}
           onChange={(e) => setMinPrice(e.target.value)}
-          aria-label="Minimum price"
+          aria-label={t.ui.filterMinAria}
         />
         <span>–</span>
         <input
           type="number"
           min={0}
-          placeholder="Max $"
+          placeholder={t.ui.filterMaxPlaceholder}
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
-          aria-label="Maximum price"
+          aria-label={t.ui.filterMaxAria}
         />
       </div>
 
       <div className="auction-filters__actions">
         <Button type="submit" size="sm">
-          Apply filters
+          {t.ui.filterApply}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={handleReset}>
-          Reset
+          {t.ui.filterReset}
         </Button>
       </div>
       {rangeError ? <span className="auction-filters__error">{rangeError}</span> : null}

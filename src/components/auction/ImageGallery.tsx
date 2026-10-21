@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useI18n } from "@/context/I18nContext";
+import { fmt } from "@/i18n/translations";
 import "./ImageGallery.css";
 
 interface ImageGalleryProps {
@@ -12,6 +14,7 @@ export default function ImageGallery({
   title,
   onImageChange,
 }: ImageGalleryProps) {
+  const { t } = useI18n();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrevious = () => {
@@ -46,7 +49,7 @@ export default function ImageGallery({
     return (
       <div className="gallery-empty">
         <div className="gallery-empty__icon">📸</div>
-        <p>No images available</p>
+        <p>{t.ui.galleryEmpty}</p>
       </div>
     );
   }
@@ -58,7 +61,7 @@ export default function ImageGallery({
         <button
           className="gallery-nav gallery-nav--prev"
           onClick={handlePrevious}
-          aria-label="Previous image"
+          aria-label={t.ui.galleryPrev}
           disabled={images.length <= 1}
         >
           <span className="gallery-nav__icon">‹</span>
@@ -67,7 +70,7 @@ export default function ImageGallery({
         <div className="gallery-main">
           <img
             src={images[currentIndex]}
-            alt={`${title} - Image ${currentIndex + 1} of ${images.length}`}
+            alt={fmt(t.ui.galleryImageAlt, { title, n: currentIndex + 1, total: images.length })}
             className="gallery-main__image"
             loading="lazy"
           />
@@ -79,7 +82,7 @@ export default function ImageGallery({
         <button
           className="gallery-nav gallery-nav--next"
           onClick={handleNext}
-          aria-label="Next image"
+          aria-label={t.ui.galleryNext}
           disabled={images.length <= 1}
         >
           <span className="gallery-nav__icon">›</span>
@@ -97,9 +100,9 @@ export default function ImageGallery({
                   index === currentIndex ? "is-active" : ""
                 }`}
                 onClick={() => handleThumbnailClick(index)}
-                aria-label={`View image ${index + 1}`}
+                aria-label={fmt(t.ui.galleryViewImage, { n: index + 1 })}
               >
-                <img src={image} alt={`Thumbnail ${index + 1}`} />
+                <img src={image} alt={fmt(t.ui.galleryThumbnail, { n: index + 1 })} />
               </button>
             ))}
           </div>
@@ -109,7 +112,7 @@ export default function ImageGallery({
       {/* Info */}
       <div className="gallery-info">
         <p className="gallery-info__text">
-          Use arrow keys or buttons to navigate
+          {t.ui.galleryHint}
         </p>
       </div>
     </div>

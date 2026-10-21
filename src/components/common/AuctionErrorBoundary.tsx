@@ -1,4 +1,5 @@
 import React from "react";
+import { currentT } from "@/i18n/translations";
 import "./AuctionErrorBoundary.css";
 
 interface Props {
@@ -36,7 +37,7 @@ export class AuctionErrorBoundary extends React.Component<Props, State> {
         this.props.fallback || (
           <div className="auction-card-error">
             <div className="auction-card-error__icon">⚠️</div>
-            <div className="auction-card-error__text">Failed to load lot</div>
+            <div className="auction-card-error__text">{currentT().ui.lotLoadFailed}</div>
           </div>
         )
       );

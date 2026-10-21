@@ -1,4 +1,5 @@
 import { useCountdown } from "@/hooks/useCountdown";
+import { useI18n } from "@/context/I18nContext";
 import { pad2 } from "@/utils/formatters";
 import "./CountdownTimer.css";
 
@@ -11,13 +12,14 @@ interface CountdownTimerProps {
 // F4: the scoreboard-style countdown — the design's signature element.
 // Reused on cards (sm) and the auction detail hero (lg).
 export default function CountdownTimer({ endTime, size = "sm", onEnded }: CountdownTimerProps) {
+  const { t } = useI18n();
   const { days, hours, minutes, seconds, isEnded } = useCountdown(endTime);
 
   if (isEnded) {
     onEnded?.();
     return (
       <div className={`countdown countdown--${size} countdown--ended`}>
-        <span className="countdown__ended-label">Bidding closed</span>
+        <span className="countdown__ended-label">{t.ui.biddingClosed}</span>
       </div>
     );
   }
@@ -29,20 +31,20 @@ export default function CountdownTimer({ endTime, size = "sm", onEnded }: Countd
       {days > 0 && (
         <div className="countdown__unit">
           <span className="countdown__value mono">{pad2(days)}</span>
-          <span className="countdown__label">d</span>
+          <span className="countdown__label">{t.ui.unitDays}</span>
         </div>
       )}
       <div className="countdown__unit">
         <span className="countdown__value mono">{pad2(hours)}</span>
-        <span className="countdown__label">h</span>
+        <span className="countdown__label">{t.ui.unitHours}</span>
       </div>
       <div className="countdown__unit">
         <span className="countdown__value mono">{pad2(minutes)}</span>
-        <span className="countdown__label">m</span>
+        <span className="countdown__label">{t.ui.unitMinutes}</span>
       </div>
       <div className="countdown__unit">
         <span className="countdown__value mono">{pad2(seconds)}</span>
-        <span className="countdown__label">s</span>
+        <span className="countdown__label">{t.ui.unitSeconds}</span>
       </div>
     </div>
   );

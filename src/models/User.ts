@@ -19,6 +19,20 @@ export interface LoginRequest {
   password: string;
 }
 
+// Step 1 of login. requiresCode=true -> a 6-digit code was emailed and `auth`
+// is absent; requiresCode=false -> email codes are off on the server and
+// `auth` already holds the tokens.
+export interface LoginStartResponse {
+  requiresCode: boolean;
+  email?: string | null;
+  auth?: AuthResponse | null;
+}
+
+export interface VerifyLoginCodeRequest {
+  email: string;
+  code: string;
+}
+
 export interface AuthResponse {
   userId: string;
   username: string;

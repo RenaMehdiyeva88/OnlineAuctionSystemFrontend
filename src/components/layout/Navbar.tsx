@@ -38,7 +38,17 @@ export default function Navbar() {
           </NavLink>
           {hasRole("Seller") && (
             <NavLink to="/seller/dashboard" className={({ isActive }) => (isActive ? "is-active" : "")}>
-              Seller Dashboard
+              {t.ui.navSellerDashboard}
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/orders/mine" className={({ isActive }) => (isActive ? "is-active" : "")}>
+              {t.orders.myOrdersTitle}
+            </NavLink>
+          )}
+          {hasRole("Seller") && (
+            <NavLink to="/seller/sales" className={({ isActive }) => (isActive ? "is-active" : "")}>
+              {t.orders.mySalesTitle}
             </NavLink>
           )}
         </nav>
@@ -49,7 +59,7 @@ export default function Navbar() {
             <>
               {hasRole("Seller") && (
                 <Button size="sm" onClick={() => navigate("/seller/auctions/new")}>
-                  + New Auction
+                  {t.ui.navNewAuction}
                 </Button>
               )}
 
@@ -75,16 +85,16 @@ export default function Navbar() {
                 {user?.username}
               </NavLink>
               <Button size="sm" variant="ghost" onClick={handleLogout}>
-                Log out
+                {t.ui.navLogout}
               </Button>
             </>
           ) : (
             <>
               <Button size="sm" variant="ghost" onClick={() => navigate("/login")}>
-                Log in
+                {t.ui.navLogin}
               </Button>
               <Button size="sm" onClick={() => navigate("/register")}>
-                Sign up
+                {t.ui.navSignup}
               </Button>
             </>
           )}

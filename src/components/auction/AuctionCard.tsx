@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useI18n } from "@/context/I18nContext";
 import type { AuctionListItem } from "@/models/Auction";
 import { formatCurrency } from "@/utils/formatters";
 import { getPrimaryImage, getPlaceholderImage } from "@/utils/imageFallback";
@@ -12,6 +13,7 @@ interface AuctionCardProps {
 }
 
 export default function AuctionCard({ auction }: AuctionCardProps) {
+  const { t } = useI18n();
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -50,7 +52,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
             <StatusBadge status={auction.status} />
           </div>
           {auction.endTime && new Date(auction.endTime).getTime() - Date.now() < 3600000 && (
-            <div className="auction-card__urgent-badge">🔥 Ending soon</div>
+            <div className="auction-card__urgent-badge">🔥 {t.auctions.endingSoon}</div>
           )}
         </div>
       </div>
@@ -64,7 +66,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
 
         <div className="auction-card__price-section">
           <div className="auction-card__price-info">
-            <span className="auction-card__label">Current bid</span>
+            <span className="auction-card__label">{t.auctions.currentBid}</span>
             <span className="auction-card__price mono">
               {formatCurrency(auction.currentHighestBid)}
             </span>
@@ -76,7 +78,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
         </div>
 
         <button className="auction-card__cta">
-          View auction
+          {t.auctions.viewAuction}
           <span className="auction-card__cta-arrow">→</span>
         </button>
       </div>

@@ -102,7 +102,7 @@ export default function Home() {
           <div className="hero__visual">
             <img 
               src={HERO_BACKGROUND_IMAGE} 
-              alt="Premium auction house interior"
+              alt={t.ui.homeHeroAlt}
               loading="lazy"
               className="hero__visual-image"
             />
@@ -119,8 +119,8 @@ export default function Home() {
         <section className="container categories-section">
           <div className="categories-section__header">
             <div>
-              <span className="eyebrow">Explore by category</span>
-              <h2>Popular collections</h2>
+              <span className="eyebrow">{t.ui.homeExploreEyebrow}</span>
+              <h2>{t.ui.homePopularCollections}</h2>
             </div>
           </div>
           <div className="categories-grid">
@@ -148,32 +148,32 @@ export default function Home() {
       <section className="container featured-section">
         <div className="featured-section__header">
           <div>
-            <span className="eyebrow">Closing soon</span>
-            <h2>Featured lots</h2>
+            <span className="eyebrow">{t.ui.homeClosingSoon}</span>
+            <h2>{t.ui.homeFeaturedLots}</h2>
             <p className="featured-section__subtitle">
-              Hand-picked selections closing within the next 24 hours
+              {t.ui.homeFeaturedSubtitle}
             </p>
           </div>
           <Link to="/auctions" className="featured-section__view-all">
-            View all lots
+            {t.ui.homeViewAll}
             <span>→</span>
           </Link>
         </div>
 
         {isLoading ? (
-          <Spinner label="Loading featured lots…" />
+          <Spinner label={t.ui.homeLoadingFeatured} />
         ) : error ? (
           // Show message but don't crash - user can still browse
           <div className="featured-section__error">
-            <p>We're having trouble loading featured lots right now.</p>
+            <p>{t.ui.homeFeaturedError}</p>
             <Link to="/auctions">
-              <Button size="sm">Browse all auctions instead →</Button>
+              <Button size="sm">{t.ui.homeBrowseInstead}</Button>
             </Link>
           </div>
         ) : featured.length === 0 ? (
           <EmptyState
-            title="No live lots right now"
-            description="Check back soon — new auctions go live regularly."
+            title={t.ui.homeNoLiveTitle}
+            description={t.ui.homeNoLiveDesc}
           />
         ) : (
           <AuctionGrid auctions={featured} />
@@ -185,19 +185,19 @@ export default function Home() {
         <div className="container stats-grid">
           <div className="stat-card">
             <div className="stat-card__value">12.5K+</div>
-            <div className="stat-card__label">Active auctions</div>
+            <div className="stat-card__label">{t.ui.homeStatActive}</div>
           </div>
           <div className="stat-card">
             <div className="stat-card__value">$50M+</div>
-            <div className="stat-card__label">Total volume</div>
+            <div className="stat-card__label">{t.ui.homeStatVolume}</div>
           </div>
           <div className="stat-card">
             <div className="stat-card__value">98%</div>
-            <div className="stat-card__label">Seller satisfaction</div>
+            <div className="stat-card__label">{t.ui.homeStatSatisfaction}</div>
           </div>
           <div className="stat-card">
             <div className="stat-card__value">24/7</div>
-            <div className="stat-card__label">Customer support</div>
+            <div className="stat-card__label">{t.ui.homeStatSupport}</div>
           </div>
         </div>
       </section>
@@ -206,14 +206,13 @@ export default function Home() {
       <section className="cta-section">
         <div className="container cta-section__inner">
           <div className="cta-section__content">
-            <span className="eyebrow">Ready to sell?</span>
-            <h2>List your items today</h2>
+            <span className="eyebrow">{t.ui.homeSellEyebrow}</span>
+            <h2>{t.ui.homeSellTitle}</h2>
             <p>
-              Join thousands of sellers earning from their collections. Get started in minutes 
-              with our simple, transparent auction process.
+              {t.ui.homeSellText}
             </p>
             <Link to="/register">
-              <Button size="lg">Create a seller account</Button>
+              <Button size="lg">{t.ui.homeSellButton}</Button>
             </Link>
           </div>
         </div>

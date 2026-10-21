@@ -109,7 +109,7 @@ export default function SellerDashboard() {
               <th>{t.pages.sellerDashboardColBids}</th>
               <th>{t.pages.sellerDashboardColCloses}</th>
               {tab === "completed" && <th>{t.pages.sellerDashboardColWinner}</th>}
-              <th aria-label="Actions" />
+              <th aria-label={t.ui.actions} />
             </tr>
           </thead>
           <tbody>
@@ -136,7 +136,7 @@ export default function SellerDashboard() {
                       isLoading={cancellingId === auction.id}
                       onClick={() => handleCancel(auction.id)}
                     >
-                      Cancel
+                      {t.common.cancel}
                     </Button>
                   ) : null}
                 </td>
