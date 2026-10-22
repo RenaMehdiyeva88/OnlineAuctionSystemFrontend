@@ -1,63 +1,72 @@
-Auctionhouse — Online Auction System Frontend
-React + Vite + TypeScript frontend for the Online Auction System, built to talk to the
-existing ASP.NET Core Web API (`OnlineAuctionSystem.Presentation`) over HTTP and SignalR.
-Setup
+# Online Auction System — Frontend
+
+React + TypeScript + Vite client for the Online Auction System. It talks to the ASP.NET Core backend over REST and SignalR.
+Backend repository: [OnlineAuctionSystemBackend](https://github.com/RenaMehdiyeva88/OnlineAuctionSystemBackend).
+
+## Features
+- Browse, search and filter auctions; live countdown timers
+- Place bids with real-time updates (SignalR): outbid, new bid, auction won/closed notifications
+- Register / login with an e-mail confirmation code, password reset
+- Sellers: create lots with photo upload, "Suggest with AI" listing generation, seller dashboard, sales
+- Buyers: bid history, orders (checkout for won auctions, mark payment sent)
+- AI assistant chat answering questions about the auction rules and current lots
+- Interface in English, Russian and Azerbaijani
+
+## Tech stack
+React 18, TypeScript, Vite, React Router 6, Axios, @microsoft/signalr.
+
+## Getting started
+Requirements: Node.js 18+ and the backend running (see its README).
+
 ```bash
 npm install
-cp .env.example .env   # then edit VITE_API_BASE_URL / VITE_SIGNALR_HUB_URL
+cp .env.example .env      # Windows PowerShell: copy .env.example .env
 npm run dev
 ```
-The dev server runs on `http://localhost:5173`. All backend URLs are configured through
-`.env` — nothing is hardcoded, so pointing at a different environment is a one-line change.
-Structure
+The app runs at `http://localhost:5173`.
+
+### Environment variables (`.env`)
+| Variable | Meaning |
+|---|---|
+| `VITE_API_BASE_URL` | Backend API base, e.g. `https://localhost:7201/api` |
+| `VITE_SIGNALR_HUB_URL` | SignalR hub, e.g. `https://localhost:7201/hubs/notifications` |
+
+The ports must match the backend launch profile (`http` → 5201, `https` → 7201). Do not put secrets in `.env`; everything here is public in the browser bundle.
+
+## Scripts
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Type-check (`tsc -b`) and production build |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | ESLint |
+
+## Structure
 ```
 src/
-├── api/            axios instance + one file per resource (auth, auction, bid, user, category, notification)
-├── models/         TypeScript interfaces mirroring the backend Contracts DTOs
-├── context/        AuthContext (session) + NotificationContext (toast/outbid pop-ups)
-├── hooks/          useAuth, useToast, useCountdown (F4), useAuctionHub (F3, SignalR)
-├── routes/         ProtectedRoute (any logged-in user), SellerRoute (Seller role only)
-├── components/
-│   ├── common/     Button, form fields, Badge, Spinner, EmptyState, ErrorBanner, Toasts
-│   ├── layout/     Navbar, Footer, Layout (wraps every page)
-│   ├── auction/    AuctionCard, AuctionGrid, AuctionFilters (F8), CountdownTimer (F4)
-│   └── bid/        BidForm (F3), BidHistoryList (F7)
-├── pages/          One folder per route (see table below)
-├── styles/         tokens.css (design system variables) + global.css
-└── utils/          formatters, API base URL constants
+├── api/          Axios client + one file per resource (auth, auction, bid, order, ai, ...)
+├── models/       TypeScript types mirroring the backend DTOs
+├── context/      Auth and notification state
+├── hooks/        useAuctionHub / useNotificationHub (SignalR), useCountdown, ...
+├── i18n/         en / ru / az translations
+├── routes/       ProtectedRoute, SellerRoute
+├── components/   common, layout, auction, bid
+├── pages/        Home, Auctions, AuctionDetails, Login, Register, CreateAuction,
+│                 MyOrders, MySales, SellerDashboard, Notifications, Profile, ...
+└── styles/       design tokens + global styles
 ```
-Pages ↔ features
-Page	Route	Features
-Home	`/`	Hero, featured auctions, category chips, search
-Auctions	`/auctions`	F8 — search, category filter, price range
-Auction Details	`/auctions/:id`	F3 (live bidding via SignalR), F4 (countdown), F5 (winner), F7 (bid history)
-Login	`/login`	F1
-Register	`/register`	F1
-Create Auction	`/seller/auctions/new`	F2 (Seller-only route)
-Seller Dashboard	`/seller/dashboard`	F6 (Seller-only route)
-Profile	`/profile`	Account info, logout (protected route)
-404	`*`	—
-Real-time bidding (F3)
-`useAuctionHub` connects to the real SignalR hub the backend already exposes at
-`/hubs/auctions` (`AuctionHub` in `OnlineAuctionSystem.Presentation`). No fake timers or
-simulated data — it's a genuine WebSocket connection with automatic reconnect that:
-joins the auction's group on mount (`JoinAuctionGroup`)
-listens for `NewBid`, `OutBid`, `AuctionWon`, `AuctionClosed` events pushed from the backend
-leaves the group on unmount
-⚠️ Backend endpoints this frontend expects but that may not exist yet
-I designed the API layer against endpoints the backend should expose based on the
-Application layer we already built together. A few aren't wired into controllers yet —
-add these actions before the frontend will fully work end-to-end:
-`POST /api/users/login` → `LoginUserCommand` (Application has the handler, `UsersController` doesn't call it yet)
-`POST /api/users/refresh-token` → `RefreshTokenCommand`
-`GET /api/categories` → `GetCategoriesQuery` (needs a `CategoriesController`)
-`GET /api/notifications?userId=` → `GetNotificationsQuery` (needs a `NotificationsController`) — the frontend currently only uses SignalR push events for notifications, not this endpoint, so it's not blocking.
-Also worth revisiting: `AuctionsController.Create` and `BidsController.PlaceBid` currently
-take `sellerId`/`bidderId` as query parameters. Once JWT auth middleware is wired up and
-`ICurrentUserService` reads the token, those should come from the authenticated user
-instead — passing your own ID as a query param is something any client could spoof.
-What's intentionally not built
-No fake/mock backend anywhere — every API call goes to axios pointed at the real API.
-No hardcoded auction/user/bid data.
-Image upload isn't implemented (per the backend contract, auctions take an `imageUrl`
-string) — sellers paste a link. Swap in a real upload flow later if needed.
+
+## Routes
+`/` · `/auctions` · `/auctions/:id` · `/login` · `/register` · `/forgot-password` · `/reset-password`
+Logged in: `/profile`, `/notifications`, `/orders/mine` · Seller only: `/seller/dashboard`, `/seller/auctions/new`, `/seller/sales`
+
+## Demo checklist
+1. Log in as a seller and create a lot (try "Suggest with AI").
+2. Log in as a buyer in another browser and place bids; the first buyer gets an outbid notification.
+3. Let a short auction end; the winner can check out from "My orders", the seller confirms payment.
+
+## Known limitations
+- No automated frontend tests yet.
+- Auth tokens are kept in `localStorage`.
+- Payment is manual (no payment provider).
+- AI price suggestions are rough estimates.
